@@ -1,5 +1,5 @@
 var React=require("react");
-var ReactPanels=require("react-panels");
+var ReactPanels=require("react-panels/addons");
 var FloatingPanel = ReactPanels.FloatingPanel;
 
 var Tab = ReactPanels.Tab;
@@ -7,6 +7,8 @@ var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
 
 var Toolbar = ReactPanels.Toolbar;
 var Content = ReactPanels.Content;
+var ScrollableTabContent = ReactPanels.addons.ScrollableTabContent;
+
 var Footer = ReactPanels.Footer;
 
 var ToggleButton = ReactPanels.ToggleButton;
@@ -14,6 +16,8 @@ var E=React.createElement;
 var Reflux=require("reflux");
 var store=require("../stores/user");
 var action=require("../actions/user");
+
+var loginbuttonstyle={verticalAlign: "middle",cursor:"pointer"};
 
 var GPLUSAPIKEY="AIzaSyDyWCOLvXmoH3GSZXoa6hHE2IsbUS1TGDU";
 
@@ -68,31 +72,31 @@ var UserTab = React.createClass({
     action.login();
   }
   ,renderSignin:function() {
-    return <img src="img/google-sign-in.png" onClick={this.googleSignIn}></img>
+    return ( <p style={{textAlign: "center"}}><img style={loginbuttonstyle}src="img/google-sign-in.png" onClick={this.googleSignIn}></img></p> );
   }
   ,renderUser:function() {
-    return <div>
-      <img src={this.state.photourl}/>
-      <span>{this.state.auth.google.displayName} <br/><button onClick={this.signOut}>Sign Out</button>
-      </span>
+    return (<div style={{textAlign:"center"}}>
+        <img style={{borderRadius:"50%"}} src={this.state.photourl}/>
+        <br/><span style={{fontSize:"60%"}}>{this.state.auth.google.displayName}</span>
+        <br/><button onClick={this.signOut}>Sign Out</button>
       </div>
+      );
+  }
+  ,onresize:function() {
+
   }
   ,render: function() {
-    var self = this,
-      index = -1;
-
     return (
       <Tab
         icon={this.props.icon}
         title={this.props.title}
         showToolbar={false}
       >
-        <Content>
+        <Content onResize={this.onresize}>
          {this.state.auth?this.renderUser():this.renderSignin()}
         </Content>
       </Tab>
     );
   }
-
 });
 module.exports=UserTab;

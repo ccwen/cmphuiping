@@ -12,9 +12,11 @@ var Footer = ReactPanels.Footer;
 var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
 
+var panelActions=require("../actions/panel");
 
-var SystemTab = React.createClass({
-  displayName: 'SystemTab',
+
+var DataTab = React.createClass({
+  displayName: 'DataTab',
   mixins: [TabWrapperMixin],
 
   getInitialState: function () {
@@ -37,8 +39,10 @@ var SystemTab = React.createClass({
       }
     }
   },
-
-  render: function() {
+  addPanel:function() {
+    panelActions.add('A'+Math.random().toString().substring(0,5));
+  }
+  ,render: function() {
     var self = this,
       index = -1;
 
@@ -58,8 +62,7 @@ var SystemTab = React.createClass({
         </Toolbar>
 
         <Content>
-          <ul className="items-list">
-          </ul>
+          <button onClick={this.addPanel}>Add Panel</button>
         </Content>
 
         <Footer>
@@ -79,7 +82,7 @@ var SystemTab = React.createClass({
   }
 
 });
-module.exports=SystemTab;
+module.exports=DataTab;
 /*
             {$_data.map(function (item) {
               ++index;
