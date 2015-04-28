@@ -40,7 +40,7 @@ var DataTab = React.createClass({
     }
   },
   addPanel:function() {
-    panelActions.add('A'+Math.random().toString().substring(0,5));
+    panelActions.add('A'+Math.random().toString().substring(3,5));
   }
   ,render: function() {
     var self = this,

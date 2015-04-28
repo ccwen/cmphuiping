@@ -6,10 +6,8 @@ var Reflux=require("reflux");
 var store=require("./stores/panel");
 var action=require("./actions/panel");
 
-var EmptyTab=require("./containers/emptytab");
 var E=React.createElement;
-var FloatingPanel = ReactPanels.FloatingPanel;
-var Resizable=require("react-component-resizable");
+var TextPanel = require("./containers/textpanel");
 var maincomponent = React.createClass({
   mixins:[,Reflux.ListenerMixin]
   ,getInitialState:function() {
@@ -18,11 +16,15 @@ var maincomponent = React.createClass({
   ,componentDidMount:function(){
      this.listenTo(store, this.onStore);
   }
+  ,onPanelClose:function(panelid) {
+    action.remove(panelid);
+  }
   ,onStore:function(panels) {
     this.setState({panels:panels});
   }
   ,renderPanel:function(panel,idx) {
-    return E(FloatingPanel,panel.props,E(EmptyTab));
+    ;
+    return <TextPanel {...panel.props} key={panel.id} context={panel} panelid={panel.id} onPanelClose={this.onPanelClose} />;
   }
   ,render: function() {
     return <div style={{width:"100%",height:"100%",background:"#333333"}}>

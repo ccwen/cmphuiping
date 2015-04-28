@@ -7,6 +7,7 @@ var Toolbar = ReactPanels.Toolbar;
 var Content = ReactPanels.Content;
 var Footer = ReactPanels.Footer;
 var ToggleButton = ReactPanels.ToggleButton;
+//var Button = ReactPanels.Button;
 var E=React.createElement;
 
 
@@ -15,20 +16,35 @@ var EmptyTab = React.createClass({
   mixins: [TabWrapperMixin],
 
   getInitialState: function () {
-     return {};
+     return {sz:1};
   },
-  render: function() {
-    var self = this,
-      index = -1;
-
+  resize:function(e) {
+    var sz=this.state.sz+1;
+    if (sz>3) sz=1;
+    this.props.onResize&&this.props.onResize(sz);
+    this.setState({sz:sz});
+  }
+  ,cloneTab:function() {
+    var title=Math.random().toString().substr(3,3);
+    this.props.onClone && this.props.onClone(this,title);
+  }
+  ,render: function() {
     return (
-      <Tab
+      <Tab ref="tab"
         icon={this.props.icon}
         title={this.props.title}
-        showToolbar={false}
+        showToolbar={this.props.showToolbar}
       >
+        <Toolbar>
+          <div >
+          <button onClick={this.cloneTab}>+</button>          
+          <button onClick={this.resize}>sz</button>
+          </div>
+        </Toolbar>
+
         <Content>
           <ul className="items-list">
+            content {Math.random().toString().substr(3,5)}
           </ul>
         </Content>
 

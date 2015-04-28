@@ -37,21 +37,30 @@ var ControlPanel = React.createClass({
     this.refs.myPanel.setSelectedIndex(0);
     this.forceUpdate();
   },
-
+  handleToggleToolbars: function () {
+      this.setState({toolbars: !this.state.toolbars});
+  },
   handleToggleToolbars: function () {
     this.setState({toolbars: !this.state.toolbars});
     this.forceUpdate();
   },
-
+  panelButtons:function() {
+    return [
+      <ToggleButton title="Toggle Toolbar" active={this.state.toolbars} onChange={this.handleToggleToolbars}>
+      ...
+      </ToggleButton>
+    ]
+  },
   render: function() {
     var that = this;
 
     return (
-      E(FloatingPanel, {left: 20, top: 10, width: 280, ref: "systemPanel", theme:"flexbox2"},
+      E(FloatingPanel, {left: 10, top: 10, width: 280, ref: "systemPanel", 
+              theme:"flexbox2",buttons:this.panelButtons()},
 
-    	E(DataTab, {icon: "", title: "Data", showToolbar:false})
+    	E(DataTab, {icon: "", title: "Data", showToolbar:that.state.toolbars})
       ,E(UserTab, {icon: "", title: "User", showToolbar:that.state.toolbars})
-      ,E(AboutTab, {icon: "", title: "About", showToolbar:false})
+      ,E(AboutTab, {icon: "", title: "About", showToolbar:that.state.toolbars})
       )
     );
   }
