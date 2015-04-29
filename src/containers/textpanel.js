@@ -22,7 +22,7 @@ var showtab=function(){
 var TextPanel=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function() {
-		return update(this.props,{$merge:{buttons:this.panelButtons(true),toolbars:true}});
+		return update(this.props,{$merge:{buttons:this.panelButtons(true),toolbars:false}});
 	}
 	,closeTab:function(){
       var selectedIndex = this.refs.panel.getSelectedIndex();
@@ -33,10 +33,11 @@ var TextPanel=React.createClass({
     	this.setState({toolbars: !this.state.toolbars});
   	}
   	,panelButtons:function() {
+  		var toolbars=(!this.state)?false:this.state.toolbars
     	return [
      		 <Button onClick={this.closeTab}>&#10006;</Button>
      		 ,
-     		 <ToggleButton title="Toggle Toolbar" active={!!toolbar||this.state.toolbars} onChange={this.handleToggleToolbars}>
+     		 <ToggleButton title="Toggle Toolbar" active={toolbars} onChange={this.handleToggleToolbars}>
      			 ...
      		 </ToggleButton>
 
