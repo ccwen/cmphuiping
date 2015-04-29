@@ -23,8 +23,7 @@ var maincomponent = React.createClass({
     this.setState({panels:panels});
   }
   ,renderPanel:function(panel,idx) {
-    ;
-    return <TextPanel {...panel.props} key={panel.id} context={panel} panelid={panel.id} onPanelClose={this.onPanelClose} />;
+    return <TextPanel {...panel.props} key={panel.key} context={panel} panelKey={panel.key} onPanelClose={this.onPanelClose} />;
   }
   ,render: function() {
     return <div style={{width:"100%",height:"100%",background:"#333333"}}>

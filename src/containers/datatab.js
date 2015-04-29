@@ -13,7 +13,7 @@ var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
 
 var panelActions=require("../actions/panel");
-
+var TextTab=require("./texttab");
 
 var DataTab = React.createClass({
   displayName: 'DataTab',
@@ -40,7 +40,9 @@ var DataTab = React.createClass({
     }
   },
   addPanel:function() {
-    panelActions.add('A'+Math.random().toString().substring(3,5));
+    var key='A'+Math.random().toString().substring(3,6);
+    var tab={key:key,title:key,component:TextTab};
+    panelActions.add(key,[tab]);
   }
   ,render: function() {
     var self = this,

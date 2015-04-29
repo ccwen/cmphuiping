@@ -1,4 +1,4 @@
-var React=require("react");
+var React=require("react/addons");
 var ReactPanels=require("react-panels");
 var FloatingPanel = ReactPanels.FloatingPanel;
 var Tab = ReactPanels.Tab;
@@ -9,11 +9,12 @@ var Footer = ReactPanels.Footer;
 var ToggleButton = ReactPanels.ToggleButton;
 //var Button = ReactPanels.Button;
 var E=React.createElement;
+var PureRenderMixin=React.addons.PureRenderMixin;
 
-
-var EmptyTab = React.createClass({
+var action=require("../actions/panel");
+var TextTab = React.createClass({
   displayName: 'EmptyTab',
-  mixins: [TabWrapperMixin],
+  mixins: [TabWrapperMixin,PureRenderMixin],
 
   getInitialState: function () {
      return {sz:1};
@@ -28,12 +29,18 @@ var EmptyTab = React.createClass({
     var title=Math.random().toString().substr(3,3);
     this.props.onClone && this.props.onClone(this,title);
   }
+  ,addTab:function() {
+    var key='T'+Math.random().toString().substr(3,5);
+    var tab={key:key,title:key,component:TextTab};
+    action.addTab(this.props.panelKey,tab);
+  }
   ,render: function() {
     return (
       <Tab ref="tab"
         icon={this.props.icon}
         title={this.props.title}
         showToolbar={this.props.showToolbar}
+        maxContentHeight={300}
       >
         <Toolbar>
           <div >
@@ -44,7 +51,8 @@ var EmptyTab = React.createClass({
 
         <Content>
           <ul className="items-list">
-            content {Math.random().toString().substr(3,5)}
+            content {Math.random().toString().substr(3,5)} 
+            <button onClick={this.addTab}>add</button>
           </ul>
         </Content>
 
@@ -54,4 +62,4 @@ var EmptyTab = React.createClass({
   }
 
 });
-module.exports=EmptyTab;
+module.exports=TextTab;

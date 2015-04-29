@@ -1,5 +1,5 @@
 var React=require("react");
-var ReactPanels=require("react-panels/addons");
+var ReactPanels=require("react-panels");
 var FloatingPanel = ReactPanels.FloatingPanel;
 
 var Tab = ReactPanels.Tab;
@@ -7,7 +7,7 @@ var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
 
 var Toolbar = ReactPanels.Toolbar;
 var Content = ReactPanels.Content;
-var ScrollableTabContent = ReactPanels.addons.ScrollableTabContent;
+//var ScrollableTabContent = ReactPanels.addons.ScrollableTabContent;
 
 var Footer = ReactPanels.Footer;
 
