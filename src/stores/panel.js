@@ -28,10 +28,17 @@ var User=Reflux.createStore({
 		if (!res) return;
 		res.panel.setSelectedIndex(res.tabIdx);
 	}
-	,onAddTab:function(panelkey,trait) {
+	,createUniqueTabKey:function(tabs) {
+		return tabs.map(function(tab){
+			if (!tab.key) tab.key='T'+Math.random().toString(3,6);
+			return tab;
+		});
+	}
+	,onAddTab:function(panelkey,tab) {
 		var panel=this.getPanel(panelkey);
 		if (!panel) return;
-		panel.props.tabs = update(panel.props.tabs, {$push: [trait]});
+		this.createUniqueTabKey([tab]);
+		panel.props.tabs = update(panel.props.tabs, {$push: [tab]});
 		this.trigger(this.panels);
 	}
 	,onCloseTab:function(panelkey,tabkey) {
@@ -47,12 +54,12 @@ var User=Reflux.createStore({
 		}
 		this.trigger(this.panels);
 	}
-	,onAdd:function(name,tabs) {
-		var panel={key:Math.random().toString().substr(3,5)};
+	,onAdd:function(tabs) {
+		var panel={key:'P'+Math.random().toString().substr(3,6)};
 		var left=310+this.panels.length*50;
 		var top=10+this.panels.length*20;
-		panel.props={left: left, top: top, width: 300, key: this.panels.length,ref: name , theme:"flexbox"
-		,tabs:tabs||[]};
+		tabs=this.createUniqueTabKey(tabs||[]);
+		panel.props={left: left, top: top, width: 300, theme:"flexbox",tabs:tabs};
 		this.panels.push(panel);
 		this.trigger(this.panels);
 	},

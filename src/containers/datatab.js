@@ -40,9 +40,8 @@ var DataTab = React.createClass({
     }
   },
   addPanel:function() {
-    var key='A'+Math.random().toString().substring(3,6);
-    var tab={key:key,title:key,component:TextTab};
-    panelActions.add(key,[tab]);
+    var tab={component:TextTab,title:'firsttab'};
+    panelActions.add([tab]);
   }
   ,render: function() {
     var self = this,

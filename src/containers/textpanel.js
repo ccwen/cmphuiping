@@ -15,17 +15,14 @@ var action=require("../actions/panel");
 
 var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
+var update=React.addons.update;
 var showtab=function(){
 	console.log(arguments);
 }
 var TextPanel=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function() {
-		var props=this.props;
-		return {left:props.left,theme:props.theme,top:props.top,width:props.width,tabClass:props.tabClass
-			,buttons:this.panelButtons(true)
-			,toolbars:true
-		};
+		return update(this.props,{$merge:{buttons:this.panelButtons(true),toolbars:true}});
 	}
 	,closeTab:function(){
       var selectedIndex = this.refs.panel.getSelectedIndex();
