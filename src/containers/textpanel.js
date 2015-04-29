@@ -29,7 +29,8 @@ var TextPanel=React.createClass({
 	}
 	,closeTab:function(){
       var selectedIndex = this.refs.panel.getSelectedIndex();
-      action.closeTab(this.props.panelKey,selectedIndex);
+      var tabkey=this.props.tabs[selectedIndex].key;
+      action.closeTab(this.props.panelKey,tabkey);
 	}
   	,handleToggleToolbars: function (toolbar) {
     	this.setState({toolbars: !this.state.toolbars});
@@ -62,7 +63,7 @@ var TextPanel=React.createClass({
 			showToolbar:this.state.toolbars});
 	}
 	,render:function() {
-		return <FloatingPanel ref="panel" {...this.state} >
+		return <FloatingPanel ref="panel" {...this.state} selectedIndex={this.props.tabs.length-1} >
 		{this.props.tabs.map(this.renderTab)}</FloatingPanel>;
 	}
 })
