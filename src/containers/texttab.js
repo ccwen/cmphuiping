@@ -13,13 +13,12 @@ var PureRenderMixin=React.addons.PureRenderMixin;
 
 var action=require("../actions/panel");
 var TextTab = React.createClass({
-  displayName: 'EmptyTab',
-  mixins: [TabWrapperMixin,PureRenderMixin],
-
-  getInitialState: function () {
+  displayName: 'EmptyTab'
+  ,mixins: [TabWrapperMixin,PureRenderMixin]
+  ,getInitialState: function () {
      return {sz:1};
-  },
-  resize:function(e) {
+  }
+  ,resize:function(e) {
     var sz=this.state.sz+1;
     if (sz>3) sz=1;
     this.props.onResize&&this.props.onResize(sz);

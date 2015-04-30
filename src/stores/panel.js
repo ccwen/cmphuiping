@@ -30,7 +30,7 @@ var User=Reflux.createStore({
 	}
 	,createUniqueTabKey:function(tabs) {
 		return tabs.map(function(tab){
-			if (!tab.key) tab.key='T'+Math.random().toString(3,6);
+			if (!tab.key) tab.key='T'+Math.random().toString().substr(3,6);
 			return tab;
 		});
 	}
