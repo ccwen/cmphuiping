@@ -11,12 +11,24 @@ var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
 var PureRenderMixin=React.addons.PureRenderMixin;
 
+
+var treetoc=require("ksana2015-treetoc");
+var TreeToc=treetoc.component;
+var firebaseurl=require("../stores/firebaseurl");
 var action=require("../actions/panel");
 var TocTab = React.createClass({
   displayName: 'TocTab'
   ,mixins: [TabWrapperMixin,PureRenderMixin]
   ,getInitialState: function () {
-     return {sz:1};
+    return {sz:1,toc:[]};
+  }
+  ,propTypes:{
+  	trait:React.PropTypes.object.isRequired
+  }
+  ,componentWillMount:function() {
+  	firebaseurl.rootpath(this.props.trait.path).once("value",function(data){
+  		this.setState({toc:treetoc.buildToc(data.val())});
+  	}.bind(this));
   }
   ,resize:function(e) {
     var sz=this.state.sz+1;
@@ -32,6 +44,9 @@ var TocTab = React.createClass({
     var key='T'+Math.random().toString().substr(3,5);
     var tab={key:key,title:key,component:TextTab};
     action.addTab(this.props.panelKey,tab);
+  }
+  ,onSelect:function() {
+
   }
   ,render: function() {
     return (
@@ -50,7 +65,7 @@ var TocTab = React.createClass({
         </Toolbar>
 
         <Content>
-          TOCTAB
+            <TreeToc data={this.state.toc} tocid={this.props.trait.key} onSelect={this.onSelect}/>
         </Content>
         <Footer>
           <button>Next</button>

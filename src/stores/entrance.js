@@ -7,7 +7,6 @@ var Markup=Reflux.createStore({
 		this.listenTo(userstore, this.onUser);
 	}
 	,onUser:function(authdata) {
-		console.log(authdata);
 		var that=this;
 		firebaseurl.entrance(authdata.uid).once("value",function(data){
 			that.trigger(data.val());

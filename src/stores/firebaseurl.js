@@ -8,4 +8,7 @@ var markups=function(db,segid) {
 var user=function() {
 	return new Firebase("https://cmphuiping.firebaseio.com/");	
 }
-module.exports={entrance:entrance,markups:markups,user:user};
+var rootpath=function(path){
+	return new Firebase("https://cmphuiping.firebaseio.com/"+path);
+}
+module.exports={entrance:entrance,markups:markups,user:user,rootpath:rootpath};

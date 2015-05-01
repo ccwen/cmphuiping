@@ -58,6 +58,7 @@ var BasePanel=React.createClass({
 		return E(tab.component,{
 			key:tab.key,
 			title:tab.title,
+			trait:tab,
 			panelKey:this.props.panelKey,
 			onClone:this.onClone,
 			onResize:this.onResize,
