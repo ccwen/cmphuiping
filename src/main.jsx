@@ -4,10 +4,14 @@ var SystemPanel=require("./containers/systempanel");
 var ReactPanels=require("react-panels");
 var Reflux=require("reflux");
 var store=require("./stores/panel");
+
+var markupstore=require("./stores/markup");
+var userstore=require("./stores/user");
+
 var action=require("./actions/panel");
 
 var E=React.createElement;
-var TextPanel = require("./containers/textpanel");
+var BasePanel = require("./containers/basepanel");
 var maincomponent = React.createClass({
   mixins:[,Reflux.ListenerMixin]
   ,getInitialState:function() {
@@ -23,7 +27,7 @@ var maincomponent = React.createClass({
     this.setState({panels:panels});
   }
   ,renderPanel:function(panel,idx) {
-    return <TextPanel {...panel.props} key={panel.key} context={panel} panelKey={panel.key} onPanelClose={this.onPanelClose} />;
+    return <BasePanel {...panel.props} key={panel.key} context={panel} panelKey={panel.key} onPanelClose={this.onPanelClose} />;
   }
   ,render: function() {
     return <div style={{width:"100%",height:"100%",background:"#333333"}}>

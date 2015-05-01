@@ -2,11 +2,13 @@ var update=require("react/addons").addons.update;
 var Reflux=require("reflux");
 var actions=require("../actions/panel");
 var TextTab=require("../containers/texttab");
+
 var User=Reflux.createStore({
 	listenables: actions,
 	panels:[]
 	,init:function() {
 	}
+
 	,getPanel:function(panelkey) {
 		var r=this.panels.filter(function(panel){return panel.key===panelkey});
 		if (r.length) return r[0];

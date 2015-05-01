@@ -1,13 +1,19 @@
 var Reflux=require("reflux");
-var Firebase=require("firebase");
-var url="https://ksana.firebaseio.com";
+var firebaseurl=require("./firebaseurl");
 var actions=require("../actions/user");
+
 
 var User=Reflux.createStore({
 	listenables: actions,
 	init:function() {
-		this.rootRef = new Firebase(url);
+		this.rootRef = firebaseurl.user();
 		this.auth=this.rootRef.getAuth();
+		if (this.auth) {
+			var that=this;
+			setTimeout(function(){
+				that.trigger(that.auth);
+			},500)
+		}
 	}
 	,onLogin:function() {
 		var that=this;

@@ -47,7 +47,7 @@ var ControlPanel = React.createClass({
   panelButtons:function() {
     return [
       <ToggleButton title="Toggle Toolbar" active={this.state.toolbars} onChange={this.handleToggleToolbars}>
-      ...
+      <span>　</span><i className="fa fa-bars"></i><span>　</span>
       </ToggleButton>
     ]
   },

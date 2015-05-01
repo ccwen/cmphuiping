@@ -1,0 +1,13 @@
+{
+  "firebase": "cmphuiping",
+  "public": ".",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**",
+    "src/**",
+    "test/**",
+    "*.cmd",
+    "*.command"
+  ]
+}

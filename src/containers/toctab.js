@@ -12,8 +12,8 @@ var E=React.createElement;
 var PureRenderMixin=React.addons.PureRenderMixin;
 
 var action=require("../actions/panel");
-var TextTab = React.createClass({
-  displayName: 'TextTab'
+var TocTab = React.createClass({
+  displayName: 'TocTab'
   ,mixins: [TabWrapperMixin,PureRenderMixin]
   ,getInitialState: function () {
      return {sz:1};
@@ -50,10 +50,7 @@ var TextTab = React.createClass({
         </Toolbar>
 
         <Content>
-          <ul className="items-list">
-            content {Math.random().toString().substr(3,5)} 
-            <button onClick={this.addTab}>add</button>
-          </ul>
+          TOCTAB
         </Content>
         <Footer>
           <button>Next</button>
@@ -63,4 +60,4 @@ var TextTab = React.createClass({
   }
 
 });
-module.exports=TextTab;
+module.exports=TocTab;

@@ -36,7 +36,7 @@ var UserTab = React.createClass({
     if (!auth) return;
     var that=this;
     var googleuid=auth.uid.substr(7);
-    var apiurl="http://picasaweb.google.com/data/entry/api/user/"+googleuid+"?alt=json";
+    var apiurl="https://picasaweb.google.com/data/entry/api/user/"+googleuid+"?alt=json";
     fetch(apiurl).then(function(res){
       if ( res.status==200)  {
         var reader=res.body.getReader();
