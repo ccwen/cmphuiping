@@ -1,6 +1,5 @@
 var React=require("react");
 var ReactPanels=require("react-panels");
-var FloatingPanel = ReactPanels.FloatingPanel;
 var Reflux=require("reflux");
 var Tab = ReactPanels.Tab;
 var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
@@ -16,14 +15,14 @@ var panelActions=require("../actions/panel");
 
 var entracestore=require("../stores/entrance");
 var tabtype=require("./tabtype");
-
+var mockdata=require("../../mockdata");
 var DataTab = React.createClass({
   displayName: 'DataTab',
   mixins: [TabWrapperMixin,Reflux.listenTo(entracestore,"onEntrace")]
 
   ,getInitialState: function () {
     this.tofind = "";
-    return {entrance:[]};
+    return {entrance:mockdata.entrance};
   }
   ,onEntrace:function(data) {
     this.setState({entrance:data});
@@ -46,17 +45,21 @@ var DataTab = React.createClass({
     var path=e.target.dataset.path;
     var title=e.target.innerHTML;
     var type=e.target.dataset.type;
+    var tocstyle=e.target.dataset.tocstyle;
     var component=tabtype.componentbyType(type);
     if(!component) {
        console.error("invalid compoent type",type ,"for ",title);
        return;
     }
-    var tab={component:component,path:path,title:title};
+    var tab={component:component,path:path,title:title,tocstyle:tocstyle};
     panelActions.add([tab]);
   }
   ,renderEntrace:function(entrance,idx) {
     return ( 
-      <button style={{fontSize:"100%"}} key={idx} data-path={entrance.path} data-type={entrance.type} onClick={this.openPanel}>
+      <button style={{fontSize:"100%"}} 
+        key={idx} data-path={entrance.path} 
+        data-tocstyle={entrance.tocstyle}
+        data-type={entrance.type} onClick={this.openPanel}>
         {entrance.title}
       </button> 
     );

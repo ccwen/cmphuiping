@@ -43,7 +43,11 @@ var User=Reflux.createStore({
 		panel.props.tabs = update(panel.props.tabs, {$push: [tab]});
 		this.trigger(this.panels);
 	}
-	,onCloseTab:function(panelkey,tabkey) {
+	,onCloseAdd:function(panelkey,oldtabkey,newtab) { //avoid flicker
+		this.onCloseTab(panelkey,oldtabkey,true);
+		this.onAddTab(panelkey,newtab);
+	}
+	,onCloseTab:function(panelkey,tabkey,notrigger) {
 		var panel=this.getPanel(panelkey);
 		if (!panel) return;
 		var tabidx=this.getTabIdx(panel,tabkey);
@@ -54,7 +58,7 @@ var User=Reflux.createStore({
 			var i=this.panels.indexOf(panel);
 			this.panels.splice(i,1);
 		}
-		this.trigger(this.panels);
+		if (!notrigger) this.trigger(this.panels);
 	}
 	,onAdd:function(tabs) {
 		var panel={key:'P'+Math.random().toString().substr(3,6)};

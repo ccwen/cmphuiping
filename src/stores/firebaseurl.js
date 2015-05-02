@@ -5,10 +5,19 @@ var entrance=function(username) {
 var markups=function(db,segid) {
 	return new Firebase("https://cmphuiping.firebaseio.com/markups/"+db+"/"+segid);
 }
+var jingwen=function(db,segid) {
+	if (!db) {
+		return new Firebase("https://cmphuiping.firebaseio.com/jingwen/");	
+	} else if (!segid) {
+		return new Firebase("https://cmphuiping.firebaseio.com/jingwen/"+db);
+	}
+	return new Firebase("https://cmphuiping.firebaseio.com/jingwen/"+db+"/"+segid);
+}
+
 var user=function() {
 	return new Firebase("https://cmphuiping.firebaseio.com/");	
 }
 var rootpath=function(path){
 	return new Firebase("https://cmphuiping.firebaseio.com/"+path);
 }
-module.exports={entrance:entrance,markups:markups,user:user,rootpath:rootpath};
+module.exports={entrance:entrance,markups:markups,user:user,rootpath:rootpath,jingwen:jingwen};

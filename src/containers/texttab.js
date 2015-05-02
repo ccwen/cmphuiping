@@ -1,4 +1,5 @@
 var React=require("react/addons");
+var Reflux=require("reflux");
 var ReactPanels=require("react-panels");
 var FloatingPanel = ReactPanels.FloatingPanel;
 var Tab = ReactPanels.Tab;
@@ -12,11 +13,33 @@ var E=React.createElement;
 var PureRenderMixin=React.addons.PureRenderMixin;
 
 var action=require("../actions/panel");
+
+var MultiSelectView=require("ksana-layer-react").MultiSelectView;
+var ReviseView=require("ksana-layer-react").ReviseView;
+var jingwenStore=require("../stores/jingwen");
+var jingwenAction=require("../actions/jingwen");
+
 var TextTab = React.createClass({
   displayName: 'TextTab'
-  ,mixins: [TabWrapperMixin,PureRenderMixin]
+  ,mixins: [TabWrapperMixin,PureRenderMixin,Reflux.listenTo(jingwenStore,"onData")]
   ,getInitialState: function () {
-     return {sz:1};
+     return {sz:1,title:this.props.title,text:"",fontSize:this.props.fontSize || 100};
+  }
+  ,propTypes:{
+    trait:React.PropTypes.object.isRequired
+  }
+  ,onData:function(dbid,segid,text,markups) {
+    if (dbid!==this.props.trait.dbid||segid!==this.props.trait.segid) return;
+    this.setState({text:text,markups:markups,title:this.props.trait.dbid+":"+this.props.trait.segid});
+  }
+  ,componentWillReceiveProps:function(nextProps) {
+    if (this.props.trait.dbid!=nextProps.trait.dbid ||
+       this.props.trait.segid!=nextProps.trait.segid) {
+      jingwenAction.fetch(nextProps.trait.dbid,nextProps.trait.segid);  
+    }
+  }
+  ,componentDidMount:function() {
+    jingwenAction.fetch(this.props.trait.dbid,this.props.trait.segid);
   }
   ,resize:function(e) {
     var sz=this.state.sz+1;
@@ -24,39 +47,62 @@ var TextTab = React.createClass({
     this.props.onResize&&this.props.onResize(sz);
     this.setState({sz:sz});
   }
-  ,cloneTab:function() {
-    var title=Math.random().toString().substr(3,3);
-    this.props.onClone && this.props.onClone(this,title);
+  ,fontresize:function(e) {
+    var fontSize=this.state.fontSize+25;
+    if (fontSize>200) fontSize=100;
+    this.setState({fontSize:fontSize});
   }
-  ,addTab:function() {
-    var key='T'+Math.random().toString().substr(3,5);
-    var tab={key:key,title:key,component:TextTab};
-    action.addTab(this.props.panelKey,tab);
+  ,cloneTabInNewPanel:function() {
+    action.add([this.props.trait]);
+  }
+  ,addTab:function(segid) {
+    var dbid=this.props.trait.dbid;
+    var tab={component:TextTab,dbid:dbid,segid:segid,title:dbid+":"+segid};
+    action.closeAdd(this.props.panelKey,this.props.trait.key,tab);
+  }
+  ,prevSeg:function() {
+    var n=parseInt(this.props.trait.segid);
+    if (!n) return;
+    n--;
+    this.addTab(n);
+  }
+  ,nextSeg:function() {
+    if (!this.state.text) return;
+    var n=parseInt(this.props.trait.segid);
+    n++;
+    this.addTab(n);
+  }
+  ,renderContent:function() {
+    if (!this.state.text) return;
+    return  <ReviseView style={{fontSize:this.state.fontSize+"%",color:"white"}} 
+          text={this.state.text} showCaret={true} />
   }
   ,render: function() {
     return (
       <Tab ref="tab"
         icon={this.props.icon}
-        title={this.props.title}
+        title={this.state.title}
         showToolbar={this.props.showToolbar}
         showFooter={this.props.showFooter}
         maxContentHeight={this.props.maxContentHeight}
+        maxContentHeight={400}
       >
         <Toolbar>
           <div >
-          <button onClick={this.cloneTab}>+</button>          
-          <button onClick={this.resize}>sz</button>
+          <button onClick={this.prevSeg}><i className="fa fa-chevron-left"/></button>
+          <button title="Open tab in new Panel" onClick={this.cloneTabInNewPanel}><i className="fa fa-files-o"></i></button>          
+          <button title="resize" onClick={this.resize}><i className="fa fa-arrows-h"></i></button>
+          <button title="change font size" onClick={this.fontresize}><i className="fa fa-font"></i></button>
+
+          <button onClick={this.nextSeg}><i className="fa fa-chevron-right"/></button>          
           </div>
         </Toolbar>
 
         <Content>
-          <ul className="items-list">
-            content {Math.random().toString().substr(3,5)} 
-            <button onClick={this.addTab}>add</button>
-          </ul>
+          {this.renderContent()}
         </Content>
         <Footer>
-          <button>Next</button>
+          <button>Text options</button>
         </Footer>
       </Tab>
     );

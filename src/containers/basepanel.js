@@ -22,7 +22,7 @@ var showtab=function(){
 var BasePanel=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function() {
-		return update(this.props,{$merge:{buttons:this.panelButtons(true),aux:0}});
+		return update(this.props,{$merge:{buttons:this.panelButtons(true),aux:3}});
 	}
 	,closeTab:function(){
       var selectedIndex = this.refs.panel.getSelectedIndex();
