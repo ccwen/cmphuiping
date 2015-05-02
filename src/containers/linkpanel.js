@@ -15,12 +15,11 @@ var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
 
 
-var DataTab=require("./datatab");
-var UserTab=require("./usertab");
-var AboutTab=require("./abouttab");
+var SelectionTab=require("./selectiontab");
+var LinkedTab=require("./linkedtab");
 
-var SystemPanel = React.createClass({
-  displayName: 'SystemPanel',
+var LinkPanel = React.createClass({
+  displayName: 'LinkPanel',
 
   getInitialState: function () {
     this.itemsShown = [];
@@ -55,31 +54,13 @@ var SystemPanel = React.createClass({
     var that = this;
 
     return (
-      E(FloatingPanel, {left: 10, top: 10, width: 280, ref: "systemPanel", 
+      E(FloatingPanel, {left: 10, top: this.props.top||300, width: this.props.width||280, ref: "LinkPanel", 
               theme:"flexbox2",buttons:this.panelButtons()},
 
-    	E(DataTab, {icon: "", title: "Data", showToolbar:that.state.toolbars})
-      ,E(UserTab, {icon: "", title: "User", showToolbar:that.state.toolbars})
-      ,E(AboutTab, {icon: "", title: "About", showToolbar:that.state.toolbars})
+    	E(SelectionTab, {icon: "", title: "Selection", showToolbar:that.state.toolbars})
+      ,E(LinkedTab, {icon: "", title: "Linked", showToolbar:that.state.toolbars})
       )
     );
   }
 });
-module.exports=SystemPanel;
-/*
-, 
-        React.createElement(MyMainTab, {
-          icon: "fa fa-cubes", 
-          title: "List of Items", 
-          pinned: true, 
-          onClickOnItem: that.handleClickOnItem, 
-          showToolbar: that.state.toolbars}
-        ), 
-        that.itemsShown.map(function (item) {
-          return (
-            React.createElement(MyItemTab, {title: item.name, icon: "fa fa-cube", item: item,
-             showToolbar: that.state.toolbars, 
-              onClose: that.handleClickOnCloseItemTab, key: item.id})
-          );
-        })
-*/
+module.exports=LinkPanel;

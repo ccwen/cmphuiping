@@ -1,6 +1,5 @@
 var React=require("react");
 var kse=require("ksana-search");
-var SystemPanel=require("./containers/systempanel");
 var ReactPanels=require("react-panels");
 var Reflux=require("reflux");
 var store=require("./stores/panel");
@@ -11,6 +10,9 @@ var userstore=require("./stores/user");
 var action=require("./actions/panel");
 
 var E=React.createElement;
+var SystemPanel=require("./containers/systempanel");
+var LinkPanel=require("./containers/linkpanel");
+
 var BasePanel = require("./containers/basepanel");
 var maincomponent = React.createClass({
   mixins:[,Reflux.ListenerMixin]
@@ -32,6 +34,7 @@ var maincomponent = React.createClass({
   ,render: function() {
     return <div style={{width:"100%",height:"100%",background:"#333333"}}>
       <SystemPanel/>
+      <LinkPanel width={280} top={300}/>
       {this.state.panels.map(this.renderPanel)}
     </div>;
   }
