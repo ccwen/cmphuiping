@@ -14,6 +14,7 @@ var Selection=Reflux.createStore({
 				delete sels[key];
 			}
 		}
+		this.trigger("*",sels);
 	}
 	,onSet:function(dbid,segid,selections) {
 		this.selections[dbid+"/"+segid]=selections;
@@ -21,9 +22,10 @@ var Selection=Reflux.createStore({
 	}
 	,onClearAll:function(dbid,segid) {
 		if (!dbid) {
-			this.selections={};
+			for (var i in this.selections) this.selections[i]=[];
+		} else {
+			this.selections[dbid+"/"+segid]=[];			
 		}
-		delete this.selections[dbid+"/"+segid];
 		this.broadcast();
 	}
 });

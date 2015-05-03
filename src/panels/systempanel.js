@@ -58,9 +58,9 @@ var SystemPanel = React.createClass({
       E(FloatingPanel, {left: 10, top: 10, width: 280, ref: "systemPanel", 
               theme:"flexbox2",buttons:this.panelButtons()},
 
-    	E(DataTab, {icon: "", title: "Data", showToolbar:that.state.toolbars})
-      ,E(UserTab, {icon: "", title: "User", showToolbar:that.state.toolbars})
-      ,E(AboutTab, {icon: "", title: "About", showToolbar:that.state.toolbars})
+    	E(DataTab, {icon: "fa fa-database", title: "Data", showToolbar:that.state.toolbars})
+      ,E(UserTab, {icon: "fa fa-user", title: "User", showToolbar:that.state.toolbars})
+      ,E(AboutTab, {icon: "fa fa-info", title: "About", showToolbar:that.state.toolbars})
       )
     );
   }

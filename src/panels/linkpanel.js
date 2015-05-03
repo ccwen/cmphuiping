@@ -58,7 +58,7 @@ var LinkPanel = React.createClass({
               theme:"flexbox2",buttons:this.panelButtons()},
 
     	E(SelectionTab, {icon: "", title: "Selection", showToolbar:that.state.toolbars})
-      ,E(LinkedTab, {icon: "", title: "Linked", showToolbar:that.state.toolbars})
+      ,E(LinkedTab, {icon: "fa fa-link", title: "Linked", showToolbar:that.state.toolbars})
       )
     );
   }
