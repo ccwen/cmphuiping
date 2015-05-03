@@ -51,7 +51,7 @@ var DataTab = React.createClass({
        console.error("invalid compoent type",type ,"for ",title);
        return;
     }
-    var tab={component:component,path:path,title:title,tocstyle:tocstyle};
+    var tab={type:type,path:path,title:title,tocstyle:tocstyle};
     panelActions.add([tab]);
   }
   ,renderEntrace:function(entrance,idx) {

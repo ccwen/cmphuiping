@@ -13,7 +13,8 @@ var E=React.createElement;
 var PureRenderMixin=React.addons.PureRenderMixin;
 
 var action=require("../actions/panel");
-
+var selectionAction=require("../actions/selection");
+var selectionStore=require("../stores/selection");
 var MultiSelectView=require("ksana-layer-react").MultiSelectView;
 var ReviseView=require("ksana-layer-react").ReviseView;
 var jingwenStore=require("../stores/jingwen");
@@ -21,9 +22,13 @@ var jingwenAction=require("../actions/jingwen");
 
 var TextTab = React.createClass({
   displayName: 'TextTab'
-  ,mixins: [TabWrapperMixin,PureRenderMixin,Reflux.listenTo(jingwenStore,"onData")]
+  ,mixins: [TabWrapperMixin,PureRenderMixin
+    ,Reflux.listenTo(jingwenStore,"onData")
+    ,Reflux.listenTo(selectionStore,"onSelection")]
   ,getInitialState: function () {
-     return {sz:1,title:this.props.title,text:"",fontSize:this.props.fontSize || 100};
+     return {sz:1,title:this.props.title,text:""
+      ,fontSize:this.props.trait.fontSize || 100
+      ,selections:this.props.selections||[]};
   }
   ,propTypes:{
     trait:React.PropTypes.object.isRequired
@@ -42,8 +47,8 @@ var TextTab = React.createClass({
     jingwenAction.fetch(this.props.trait.dbid,this.props.trait.segid);
   }
   ,resize:function(e) {
-    var sz=this.state.sz+1;
-    if (sz>3) sz=1;
+    var sz=this.state.sz+0.5;
+    if (sz>2) sz=1;
     this.props.onResize&&this.props.onResize(sz);
     this.setState({sz:sz});
   }
@@ -51,6 +56,8 @@ var TextTab = React.createClass({
     var fontSize=this.state.fontSize+25;
     if (fontSize>200) fontSize=100;
     this.setState({fontSize:fontSize});
+    this.props.trait.fontSize=fontSize;
+    action.setTab(this.props.panelKey,this.props.trait.key,this.props.trait);
   }
   ,cloneTabInNewPanel:function() {
     action.add([this.props.trait]);
@@ -66,6 +73,15 @@ var TextTab = React.createClass({
     n--;
     this.addTab(n);
   }
+  ,onSelection:function(dbid,segid,selections) {
+    var trait=this.props.trait;
+    if (dbid!==trait.dbid || segid!==trait.segid) return; //not my business
+    this.setState({selections:selections});
+  }
+  ,onSelect:function(start,len,text,modifier,selections){
+    var trait=this.props.trait;
+    selectionAction.set(trait.dbid,trait.segid,selections);
+  }
   ,nextSeg:function() {
     if (!this.state.text) return;
     var n=parseInt(this.props.trait.segid);
@@ -74,7 +90,9 @@ var TextTab = React.createClass({
   }
   ,renderContent:function() {
     if (!this.state.text) return;
-    return  <ReviseView style={{fontSize:this.state.fontSize+"%",color:"white"}} 
+    return  <MultiSelectView onSelect={this.onSelect} 
+          style={{fontSize:this.state.fontSize+"%",color:"white"}} 
+          selections={this.state.selections}
           text={this.state.text} showCaret={true} />
   }
   ,render: function() {

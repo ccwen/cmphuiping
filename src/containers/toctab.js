@@ -42,8 +42,8 @@ var TocTab = React.createClass({
     }
   }
   ,resize:function(e) {
-    var sz=this.state.sz+1;
-    if (sz>3) sz=1;
+    var sz=this.state.sz+0.5;
+    if (sz>2) sz=1;
     this.props.onResize&&this.props.onResize(sz);
     this.setState({sz:sz});
   }

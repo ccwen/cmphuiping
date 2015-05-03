@@ -19,7 +19,11 @@ var maincomponent = React.createClass({
   ,getInitialState:function() {
     return {panels:[]};
   }
+  ,onBeforeUnload:function() {
+    store.saveWorkspace();
+  }
   ,componentDidMount:function(){
+      window.addEventListener("beforeunload", this.onBeforeUnload);
      this.listenTo(store, this.onStore);
   }
   ,onPanelClose:function(panelid) {

@@ -24,6 +24,7 @@ var jingwenstore=Reflux.createStore({
 		}
 		this.firebase.child(dbid+'/'+segid).once("value",function(snapshot){
 			var raw=snapshot.val();
+			if (doc.has(segid)) return;
 			text=doc.put(segid,raw.text);
 			that.trigger(dbid,segid,text);
 		});

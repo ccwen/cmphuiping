@@ -16,13 +16,20 @@ var action=require("../actions/panel");
 var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
 var update=React.addons.update;
+var tabtype=require("./tabtype");
+
 var showtab=function(){
 	console.log(arguments);
 }
 var BasePanel=React.createClass({
 	mixins:[PureRenderMixin]
 	,getInitialState:function() {
-		return update(this.props,{$merge:{buttons:this.panelButtons(true),aux:3}});
+		return update(this.props,{$merge:{
+				buttons:this.panelButtons(true)
+				,aux:3
+				,width:this.props.widthZoom*300
+			}
+		});
 	}
 	,closeTab:function(){
       var selectedIndex = this.refs.panel.getSelectedIndex();
@@ -45,17 +52,19 @@ var BasePanel=React.createClass({
      		 </ToggleButton>
     	]
   	}
-	,onResize:function(resize) {
-		if (resize===1) {
-			this.setState({width:this.props.width});
-		} else if (resize===2) {
-			this.setState({width:this.props.width*1.5});
-		} else if (resize===3) {
-			this.setState({width:this.props.width*2});
-		}
+  	,onBoundsChange:function(bound) {
+		this.props.context.props.left=bound.left;
+		this.props.context.props.top=bound.top;
+		action.set(this.props.panelKey,this.props.context.props);
+  	}
+	,onResize:function(zoom) {
+		this.props.context.props.widthZoom=zoom;
+		this.setState({width:zoom*300});
+		action.set(this.props.panelKey,this.props.context.props);
 	}
 	,renderTab:function(tab,idx) {
-		return E(tab.component,{
+		var component=tabtype.componentbyType(tab.type);
+		return E(component,{
 			key:tab.key,
 			title:tab.title,
 			trait:tab,
@@ -66,7 +75,7 @@ var BasePanel=React.createClass({
 			showFooter:(this.state.aux&2)==2});
 	}
 	,render:function() {
-		return <FloatingPanel ref="panel" {...this.state} selectedIndex={this.props.tabs.length-1} >
+		return <FloatingPanel onBoundsChange ={this.onBoundsChange } ref="panel" {...this.state} selectedIndex={this.props.tabs.length-1} >
 		{this.props.tabs.map(this.renderTab)}</FloatingPanel>;
 	}
 })
