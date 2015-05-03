@@ -10,10 +10,10 @@ var userstore=require("./stores/user");
 var action=require("./actions/panel");
 
 var E=React.createElement;
-var SystemPanel=require("./containers/systempanel");
-var LinkPanel=require("./containers/linkpanel");
+var SystemPanel=require("./panels/systempanel");
+var LinkPanel=require("./panels/linkpanel");
 
-var BasePanel = require("./containers/basepanel");
+var BasePanel = require("./panels/basepanel");
 var maincomponent = React.createClass({
   mixins:[,Reflux.ListenerMixin]
   ,getInitialState:function() {

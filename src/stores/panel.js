@@ -1,7 +1,6 @@
 var update=require("react/addons").addons.update;
 var Reflux=require("reflux");
 var actions=require("../actions/panel");
-var TextTab=require("../containers/texttab");
 var userstore=require("./user");
 
 var panelStore=Reflux.createStore({

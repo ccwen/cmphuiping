@@ -16,7 +16,7 @@ var action=require("../actions/panel");
 var ToggleButton = ReactPanels.ToggleButton;
 var E=React.createElement;
 var update=React.addons.update;
-var tabtype=require("./tabtype");
+var tabtype=require("../tabs/tabtype");
 
 var showtab=function(){
 	console.log(arguments);

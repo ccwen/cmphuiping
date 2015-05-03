@@ -71,22 +71,24 @@ var TextTab = React.createClass({
     var n=parseInt(this.props.trait.segid);
     if (!n) return;
     n--;
-    this.addTab(n);
-  }
-  ,onSelection:function(dbid,segid,selections) {
-    var trait=this.props.trait;
-    if (dbid!==trait.dbid || segid!==trait.segid) return; //not my business
-    this.setState({selections:selections});
-  }
-  ,onSelect:function(start,len,text,modifier,selections){
-    var trait=this.props.trait;
-    selectionAction.set(trait.dbid,trait.segid,selections);
+    this.setState({selections:[]});
+    this.addTab(n.toString());
   }
   ,nextSeg:function() {
     if (!this.state.text) return;
     var n=parseInt(this.props.trait.segid);
     n++;
-    this.addTab(n);
+    this.setState({selections:[]});
+    this.addTab(n.toString());
+  }
+  ,onSelection:function(dbid,segid,selections) {
+    var trait=this.props.trait;
+    if (dbid!=trait.dbid || segid!=trait.segid) return; //not my business
+    this.setState({selections:selections});
+  }
+  ,onSelect:function(start,len,text,modifier,selections){
+    var trait=this.props.trait;
+    selectionAction.set(trait.dbid,trait.segid,selections);
   }
   ,renderContent:function() {
     if (!this.state.text) return;
