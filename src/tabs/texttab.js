@@ -47,7 +47,7 @@ var TextTab = React.createClass({
   ,componentDidMount:function() {
     jingwenAction.fetch(this.props.trait.dbid,this.props.trait.segid);
   }
-  ,resize:function(e) {
+  ,resize:function() {
     var sz=this.state.sz+0.5;
     if (sz>2) sz=1;
     this.props.onResize&&this.props.onResize(sz);
@@ -116,7 +116,7 @@ var TextTab = React.createClass({
     else if (act==="toggleedit") this.toggleEdit();
     else if (act==="clone") this.cloneTabInNewPanel();
     else if (act==="fontresize") this.fontresize();
-    
+    else if (act==="resize") this.resize();
   }
   ,render: function() {
     return (

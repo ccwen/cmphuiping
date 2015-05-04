@@ -21,6 +21,9 @@ var TextToolbar=React.createClass({
 	,toggleEdit:function() {
 		this.props.action("toggleedit");
 	}	
+	,resize:function() {
+		this.props.action("resize");
+	}
 	,render:function(){
 		var btnstyle={marginLeft:"auto"};
 		if (this.props.editing) btnstyle={marginLeft:"auto",backgroundColor:"lightgreen",

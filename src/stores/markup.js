@@ -2,6 +2,11 @@ var Reflux=require("reflux");
 var firebaseurl=require("./firebaseurl");
 var userstore=require("./user");
 
+/*
+	receive new markup from firebase
+	jingwen will listen to markup change
+*/
+
 var Markup=Reflux.createStore({
 	init:function() {
 	

@@ -2,17 +2,21 @@ var Reflux=require("reflux");
 var firebaseurl=require("./firebaseurl");
 var action=require("../actions/jingwen");
 var ksanaLayer=require("ksana-layer");
-
+var markupStore=require("./markup");
 var documents={};
 
 var jingwenstore=Reflux.createStore({
 	listenables : action
 	,init : function() {
 		this.firebase=firebaseurl.jingwen();	
+		this.listenTo(markupStore, this.onMarkup);
 	}
 	,getDocument(dbid) {
 		if (!documents[dbid]) documents[dbid]=ksanaLayer.layerdoc.create({name:dbid});
 		return documents[dbid];
+	}
+	,onMarkup:function() {
+		
 	}
 	,onFetch:function(dbid,segid) {
 		var that=this, text="";
