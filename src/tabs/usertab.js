@@ -1,7 +1,5 @@
 var React=require("react");
 var ReactPanels=require("react-panels");
-var FloatingPanel = ReactPanels.FloatingPanel;
-
 var Tab = ReactPanels.Tab;
 var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
 

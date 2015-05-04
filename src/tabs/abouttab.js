@@ -1,7 +1,5 @@
 var React=require("react");
 var ReactPanels=require("react-panels");
-var FloatingPanel = ReactPanels.FloatingPanel;
-
 var Tab = ReactPanels.Tab;
 var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
 
@@ -28,9 +26,7 @@ var AboutTab = React.createClass({
       <Tab
         icon={this.props.icon}
         title={this.props.title}
-        showToolbar={false}
-      >
-
+        showToolbar={false}>
         <Content>
           Chinese Meaning Processing System
         </Content>

@@ -1,7 +1,6 @@
 var React=require("react/addons");
 var Reflux=require("reflux");
 var ReactPanels=require("react-panels");
-var FloatingPanel = ReactPanels.FloatingPanel;
 var Tab = ReactPanels.Tab;
 var TabWrapperMixin = ReactPanels.Mixins.TabWrapper;
 var Toolbar = ReactPanels.Toolbar;
@@ -16,10 +15,11 @@ var action=require("../actions/panel");
 var selectionAction=require("../actions/selection");
 var selectionStore=require("../stores/selection");
 var MultiSelectView=require("ksana-layer-react").MultiSelectView;
-var ReviseView=require("ksana-layer-react").ReviseView;
+var RevisionView=require("ksana-layer-react").RevisionView;
 var jingwenStore=require("../stores/jingwen");
 var jingwenAction=require("../actions/jingwen");
-
+var TextToolbar=require("../views/texttoolbar");
+var TextFooter=require("../views/textfooter");
 var TextTab = React.createClass({
   displayName: 'TextTab'
   ,mixins: [TabWrapperMixin,PureRenderMixin
@@ -28,7 +28,8 @@ var TextTab = React.createClass({
   ,getInitialState: function () {
      return {sz:1,title:this.props.title,text:""
       ,fontSize:this.props.trait.fontSize || 100
-      ,selections:this.props.selections||[]};
+      ,selections:this.props.selections||[]
+      ,editing:false};
   }
   ,propTypes:{
     trait:React.PropTypes.object.isRequired
@@ -62,7 +63,7 @@ var TextTab = React.createClass({
   ,cloneTabInNewPanel:function() {
     action.add([this.props.trait]);
   }
-  ,addTab:function(segid) {
+  ,changeTab:function(segid) {
     var dbid=this.props.trait.dbid;
     var tab={component:TextTab,dbid:dbid,segid:segid,title:dbid+":"+segid};
     action.closeAdd(this.props.panelKey,this.props.trait.key,tab);
@@ -72,14 +73,14 @@ var TextTab = React.createClass({
     if (!n) return;
     n--;
     this.setState({selections:[]});
-    this.addTab(n.toString());
+    this.changeTab(n.toString());
   }
   ,nextSeg:function() {
     if (!this.state.text) return;
     var n=parseInt(this.props.trait.segid);
     n++;
     this.setState({selections:[]});
-    this.addTab(n.toString());
+    this.changeTab(n.toString());
   }
   ,onSelection:function(dbid,segid,selections) {
     var trait=this.props.trait;
@@ -87,15 +88,35 @@ var TextTab = React.createClass({
     this.setState({selections:selections});
   }
   ,onSelect:function(start,len,text,modifier,selections){
+    if (this.state.editing) return true;
     var trait=this.props.trait;
     selectionAction.set(trait.dbid,trait.segid,selections);
   }
   ,renderContent:function() {
     if (!this.state.text) return;
-    return  <MultiSelectView onSelect={this.onSelect} 
-          style={{fontSize:this.state.fontSize+"%",color:"white"}} 
-          selections={this.state.selections}
-          text={this.state.text} showCaret={true} />
+    var component=MultiSelectView;
+    var color="white",backgroundColor="inherit";
+    if (this.state.editing) {
+      component=RevisionView;
+      color="silver";
+      backgroundColor="black";
+    }
+    return  E(component,{onSelect:this.onSelect
+          ,style : {fontSize:this.state.fontSize+"%",color:color,backgroundColor:backgroundColor}
+          ,selections :this.state.selections
+          ,text :this.state.text
+          ,showCaret:true });
+  }
+  ,toggleEdit:function() {
+    this.setState({editing:!this.state.editing});
+  }
+  ,action:function(act) {
+    if (act==="next") this.nextSeg();
+    else if (act==="prev") this.prevSeg();
+    else if (act==="toggleedit") this.toggleEdit();
+    else if (act==="clone") this.cloneTabInNewPanel();
+    else if (act==="fontresize") this.fontresize();
+    
   }
   ,render: function() {
     return (
@@ -108,21 +129,14 @@ var TextTab = React.createClass({
         maxContentHeight={400}
       >
         <Toolbar>
-          <div >
-          <button onClick={this.prevSeg}><i className="fa fa-chevron-left"/></button>
-          <button title="Open tab in new Panel" onClick={this.cloneTabInNewPanel}><i className="fa fa-files-o"></i></button>          
-          <button title="resize" onClick={this.resize}><i className="fa fa-arrows-h"></i></button>
-          <button title="change font size" onClick={this.fontresize}><i className="fa fa-font"></i></button>
-
-          <button onClick={this.nextSeg}><i className="fa fa-chevron-right"/></button>          
-          </div>
+          <TextToolbar action={this.action} editing={this.state.editing}/>
         </Toolbar>
 
         <Content>
           {this.renderContent()}
         </Content>
         <Footer>
-          <button>Text options</button>
+          <TextFooter action={this.action} editing={this.state.editing}/>
         </Footer>
       </Tab>
     );

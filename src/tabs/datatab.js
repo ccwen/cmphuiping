@@ -70,8 +70,7 @@ var DataTab = React.createClass({
       <Tab
         icon={this.props.icon}
         title={this.props.title}
-        showToolbar={this.props.showToolbar}
-      >
+        showToolbar={this.props.showToolbar}>
         <Toolbar>
           <input type="text"
             ref="search"
