@@ -15,8 +15,8 @@ var jingwenstore=Reflux.createStore({
 		if (!documents[dbid]) documents[dbid]=ksanaLayer.layerdoc.create({name:dbid});
 		return documents[dbid];
 	}
-	,onMarkup:function() {
-		
+	,onMarkup:function(markups,dbid,segid) {
+		console.log("new markup",markups,dbid,segid);
 	}
 	,onFetch:function(dbid,segid) {
 		var that=this, text="";
@@ -27,8 +27,8 @@ var jingwenstore=Reflux.createStore({
 			return ;
 		}
 		this.firebase.child(dbid+'/'+segid).once("value",function(snapshot){
-			var raw=snapshot.val();
 			if (doc.has(segid)) return;
+			var raw=snapshot.val();
 			text=doc.put(segid,raw.text);
 			that.trigger(dbid,segid,text);
 		});

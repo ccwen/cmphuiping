@@ -9,18 +9,26 @@ var Selection=Reflux.createStore({
 		var sels=this.selections;
 		for (var key in sels) {
 			var res=key.split("/");
-			this.trigger(res[0],res[1],sels[key]);
+			this.trigger(sels[key],res[0],res[1]);
 			if (!sels[key].length) {
 				delete sels[key];
 			}
 		}
-		this.trigger("*",sels);
+		this.trigger(sels,"*");
 	}
 	,onSet:function(dbid,segid,selections) {
 		this.selections[dbid+"/"+segid]=selections;
 		this.broadcast();
 	}
-	,onClearAll:function(dbid,segid) {
+	,rangeCount:function(sels) {
+		if (!sels) sels=this.selections;
+		var count=0;
+		for (var i in sels) {
+			count+=sels[i].filter(function(m){ return !!m[1]}).length;
+		}
+		return count;
+	}	
+	,onClear:function(dbid,segid) {
 		if (!dbid) {
 			for (var i in this.selections) this.selections[i]=[];
 		} else {

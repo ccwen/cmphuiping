@@ -20,8 +20,8 @@ var SelectionTab = React.createClass({
   ,getInitialState: function () {
     return {selections:{}};
   }
-  ,onSelection:function(all, sels) {
-    if (all!=="*") return;
+  ,onSelection:function(sels,dbid) {
+    if (dbid!=="*") return;
     this.setState({selections:sels});
   }
   ,propTypes:{
@@ -33,21 +33,15 @@ var SelectionTab = React.createClass({
     var out=[];
     for (var i in sels) {
       var r=i.split("/");
-      out.push( <Ranges key={i} dbid={r[0]} segid={r[1]} ranges={sels[i]} /> );
+      out.push( E(Ranges, {key:i, dbid:r[0], segid:r[1], ranges:sels[i]} ));
     }
     return out;
-  }
-  ,hasSelection:function() {
-    var sels=this.state.selections;
-    for (var i in sels) {
-      if (sels[i][0][1]) return true;
-    }
-    return false;
   }
   ,clearAllSelection:function() {
     selectionAction.clearAll();
   }
   ,render: function() {
+    var hasrange=selectionStore.rangeCount(this.props.selections)>0;
     return (
       <Tab ref="tab"
         icon={this.props.icon}
@@ -57,7 +51,7 @@ var SelectionTab = React.createClass({
         maxContentHeight={400}
       >
         <Toolbar>
-          <button title="Clear Selection" disabled={!this.hasSelection()}
+          <button title="Clear Selection" disabled={!hasrange}
           onClick={this.clearAllSelection}><i className="fa fa-times"/></button>
         </Toolbar>
 

@@ -20,6 +20,7 @@ var jingwenStore=require("../stores/jingwen");
 var jingwenAction=require("../actions/jingwen");
 var TextToolbar=require("../views/texttoolbar");
 var TextFooter=require("../views/textfooter");
+var segRefCount =require("../actions/segrefcount");
 var TextTab = React.createClass({
   displayName: 'TextTab'
   ,mixins: [TabWrapperMixin,PureRenderMixin
@@ -40,11 +41,18 @@ var TextTab = React.createClass({
   }
   ,componentWillReceiveProps:function(nextProps) {
     if (this.props.trait.dbid!=nextProps.trait.dbid ||
-       this.props.trait.segid!=nextProps.trait.segid) {
-      jingwenAction.fetch(nextProps.trait.dbid,nextProps.trait.segid);  
+        this.props.trait.segid!=nextProps.trait.segid) {
+      segRefCount.remove(this.props.trait.dbid,this.props.trait.segid);
+      segRefCount.add(nextProps.trait.dbid,nextProps.trait.segid);
+        
+      jingwenAction.fetch(nextProps.trait.dbid,nextProps.trait.segid);
     }
   }
+  ,componentWillUnmount:function() {
+    segRefCount.remove(this.props.trait.dbid,this.props.trait.segid);
+  }
   ,componentDidMount:function() {
+    segRefCount.add(this.props.trait.dbid,this.props.trait.segid);
     jingwenAction.fetch(this.props.trait.dbid,this.props.trait.segid);
   }
   ,resize:function() {
@@ -82,7 +90,7 @@ var TextTab = React.createClass({
     this.setState({selections:[]});
     this.changeTab(n.toString());
   }
-  ,onSelection:function(dbid,segid,selections) {
+  ,onSelection:function(selections,dbid,segid) {
     var trait=this.props.trait;
     if (dbid!=trait.dbid || segid!=trait.segid) return; //not my business
     this.setState({selections:selections});

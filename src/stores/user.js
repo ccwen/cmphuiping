@@ -4,8 +4,9 @@ var actions=require("../actions/user");
 
 
 var User=Reflux.createStore({
-	listenables: actions,
-	init:function() {
+	listenables: actions
+	,auth:null
+	,init:function() {
 		this.rootRef = firebaseurl.user();
 		this.auth=this.rootRef.getAuth();
 		if (this.auth) {

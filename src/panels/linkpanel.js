@@ -17,13 +17,14 @@ var E=React.createElement;
 
 var SelectionTab=require("../tabs/selectiontab");
 var LinkedTab=require("../tabs/linkedtab");
+var PNodeTab=require("../tabs/pnodetab");
 
 var LinkPanel = React.createClass({
   displayName: 'LinkPanel',
 
   getInitialState: function () {
     this.itemsShown = [];
-    return {toolbars: true};
+    return {toolbar: true};
   },
 
   handleClickOnItem: function (itemIndex) {
@@ -36,16 +37,16 @@ var LinkPanel = React.createClass({
     this.refs.myPanel.setSelectedIndex(0);
     this.forceUpdate();
   },
-  handleToggleToolbars: function () {
-      this.setState({toolbars: !this.state.toolbars});
+  handleToggleToolbar: function () {
+      this.setState({toolbar: !this.state.toolbar});
   },
   handleToggleToolbars: function () {
-    this.setState({toolbars: !this.state.toolbars});
+    this.setState({toolbar: !this.state.toolbar});
     this.forceUpdate();
   },
   panelButtons:function() {
     return [
-      <ToggleButton title="Toggle Toolbar" active={this.state.toolbars} onChange={this.handleToggleToolbars}>
+      <ToggleButton title="Toggle Toolbar" active={this.state.toolbar} onChange={this.handleToggleToolbar}>
       <span>　</span><i className="fa fa-bars"></i><span>　</span>
       </ToggleButton>
     ]
@@ -57,8 +58,9 @@ var LinkPanel = React.createClass({
       E(FloatingPanel, {left: 10, top: this.props.top||300, width: this.props.width||280, ref: "LinkPanel", 
               theme:"flexbox2",buttons:this.panelButtons()},
 
-    	E(SelectionTab, {icon: "", title: "Selection", showToolbar:that.state.toolbars})
-      ,E(LinkedTab, {icon: "fa fa-link", title: "Linked", showToolbar:that.state.toolbars})
+    	E(SelectionTab, {icon: "", title: "Selection", showToolbar:that.state.toolbar})
+      ,E(LinkedTab, {icon: "fa fa-link", title: "Linked", showToolbar:that.state.toolbar})
+      ,E(PNodeTab, {icon: "fa fa-share-alt", title: "PNode", showToolbar:that.state.toolbar})
       )
     );
   }
