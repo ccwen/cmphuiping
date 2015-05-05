@@ -35,7 +35,7 @@ var MarkupStore=Reflux.createStore({
 		} else {
 			var newmarkup={};
 			newmarkup[mkey]=markup;
-			markups=update(markups,{$merge:newmarkup});
+			markups=this.markups[key]=update(markups,{$merge:newmarkup});
 		}
 		
 		return {markup:markup,markups:markups,dbid:dbid,segid:segid};
@@ -67,6 +67,7 @@ var MarkupStore=Reflux.createStore({
 		}
 		if (act.removed) {
 			firebaseurl.markups(act.removed).off();
+			delete this.markups[act.removed]; //delete from cache, refetch all markups when getMarkups
 		}
 	}
 	,toArray:function(markups) {

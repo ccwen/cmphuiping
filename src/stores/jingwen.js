@@ -28,7 +28,11 @@ var jingwenstore=Reflux.createStore({
 		if (doc.has(segid)) {
 			text=doc.get(segid);
 			var markups=markupStore.getMarkups(dbid,segid);
-			if (markups) this.trigger(dbid,segid,text,markups);
+			if (markups) {
+				this.trigger(dbid,segid,text,markups);
+			} else {
+				//markupStore will trigger when markups are fetched
+			}
 			return ;
 		}
 		this.firebase.child(dbid+'/'+segid).once("value",function(snapshot){
