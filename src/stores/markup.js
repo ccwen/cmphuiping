@@ -31,6 +31,7 @@ var MarkupStore=Reflux.createStore({
 
 		if (remove) {
 			delete markups[mkey];
+			markups=this.markups[key]=update(this.markups[key],{$set:markups});
 		} else {
 			var newmarkup={};
 			newmarkup[mkey]=markup;
