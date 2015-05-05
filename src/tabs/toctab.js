@@ -34,7 +34,7 @@ var TocTab = React.createClass({
 
     if (mockdata[this.props.trait.path]) {
       this.setState({toc:treetoc.buildToc(mockdata[this.props.trait.path])});
-      console.log("using mock data")
+      console.log("using mock data for toc")
     } else {
       firebaseurl.rootpath(this.props.trait.path).once("value",function(data){
         this.setState({toc:treetoc.buildToc(data.val())});

@@ -19,7 +19,7 @@ var MarkupStore=Reflux.createStore({
 	,init:function() {
 		this.listenTo(segRefCountStore,this.onRefCount);
 	}
-	,updateMarkupsFromSnapshot:function(snapshot) {
+	,updateMarkupsFromSnapshot:function(snapshot,remove) {
 		var markup=snapshot.val();
 		var dbid=snapshot.ref().parent().parent().key();
 		var segid=snapshot.ref().parent().key();
@@ -27,33 +27,38 @@ var MarkupStore=Reflux.createStore({
 		var key=dbid+"/"+segid;
 		var mkey=snapshot.key();
 		var markups=this.markups[key];
-		if (!markups || !markups[mkey]) return null;
-		var newmarkup={};
-		newmarkup[mkey]=markup;
+		if (!markups) return null;
 
-		markups=update(markups,{$merge:newmarkup });
+		if (remove) {
+			delete markups[mkey];
+		} else {
+			var newmarkup={};
+			newmarkup[mkey]=markup;
+			markups=update(markups,{$merge:newmarkup});
+		}
+		
 		return {markup:markup,markups:markups,dbid:dbid,segid:segid};
 	}
 	,markupAdded:function(childSnapshot,prevChildName) {
 		var r=this.updateMarkupsFromSnapshot(childSnapshot);
 		if (!r) return;
-		console.log("markup added",r.markup,r.dbid,r.segid);
+		//console.log("markup added",r.markup,r.dbid,r.segid);
 		this.trigger({added:r.markup},r.dbid,r.segid,this.toArray(r.markups));
 	}
 	,markupRemoved:function(childSnapshot) {
-		var r=this.updateMarkupsFromSnapshot(childSnapshot);
+		var r=this.updateMarkupsFromSnapshot(childSnapshot,"remove");
 		if (!r) return;
-		console.log("markup removed",r.markup,r.dbid,r.segid);
+		//console.log("markup removed",r.markup,r.dbid,r.segid);
 		this.trigger({removed:r.markup},r.dbid,r.segid,this.toArray(r.markups));
 	}
 	,markupChanged:function(childSnapshot) {
 		var r=this.updateMarkupsFromSnapshot(childSnapshot);
 		if (!r) return;
-		console.log("markup changed",r.markup,r.dbid,r.segid);
+		//console.log("markup changed",r.markup,r.dbid,r.segid);
 		this.trigger({changed:r.markup},r.dbid,r.segid,this.toArray(r.markups));
 	}
 	,onRefCount:function(act,referencing) {
-		console.log('refcount',act,referencing);
+		//console.log('refcount',act,referencing);
 		if (act.added) {
 			firebaseurl.markups(act.added).on("child_added",this.markupAdded);
 			firebaseurl.markups(act.added).on("child_removed",this.markupRemoved);
@@ -73,35 +78,42 @@ var MarkupStore=Reflux.createStore({
 	,onAdd:function(dbid,segid,trait) {
 		var auth=userstore.getAuth();
 		var user=auth?auth.uid:"anonymous";
-		var markupid=genpushid();
-		var markup=update(trait,{$merge:{author:user,id:markupid}});
 		var key=dbid+"/"+segid;
+
+		var ref=firebaseurl.markups(key).push();
+		var markupid=ref.key();
+
+		var markup=update(trait,{$merge:{author:user,id:markupid}});
 		if (!this.markups[key]) this.markups[key]={} ;
-		this.markups[key][markupid]=markup;
-		this.trigger({added:this.markups[key]},dbid,segid,this.toArray(this.markups[key]));
+
+		ref.set(markup);
 		return markup;
 	}
-	,canRemove:function(markup) {
+	,canEdit:function(markup) {
 		var auth=userstore.getAuth();
 		var user=auth?auth.uid:"anonymous";
 		if (this.admin.indexOf(user)>-1 || markup.user===user) return true;
 	}
+	,onChange:function(dbid,segid,markup) {
+		if (!this.canEdit(markup))return -1;
+
+		var key=dbid+"/"+segid;
+		var ref=firebaseurl.markups(key).child(markup.id);
+		ref.set(markup);
+	}
 	,onRemove:function(dbid,segid,markup) {
 		var key=dbid+"/"+segid;
-		if (!this.canRemove(markup))return -1;
+		if (!this.canEdit(markup))return -1;
 		var markups=this.markups[key];
 		if (!markups) {
 			console.error("not loaded");
 			return -2;
 		}
-
 		if (!markups[markup.id]) {
 			console.error("not such markup",markup);
 			return -3;
 		}
-		delete markups[markup.id];
-
-		this.trigger({removed:markup},dbid,segid,this.toArray(markups));
+		var ref=firebaseurl.markups(key).child(markup.id).remove();
 		return 0;
 	}
 	,getMarkups:function(dbid,segid) {
@@ -115,7 +127,7 @@ var MarkupStore=Reflux.createStore({
 		firebaseurl.markups(key).once("value",function(data){
 			that.markups[key]=data.val() || {};
 			var markups=that.toArray(that.markups[key]);
-			console.log('markups of',dbid,segid,markups);
+			//console.log('markups of',dbid,segid,markups);
 			that.trigger({},dbid,segid,markups);
 		});
 
