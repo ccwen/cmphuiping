@@ -1,7 +1,7 @@
 var Reflux=require("reflux");
 var firebaseurl=require("./firebaseurl");
 var action=require("../actions/jingwen");
-var ksanaLayer=require("ksana-layer");
+var layerDoc=require("ksana-layer").layerdoc;
 var markupStore=require("./markup");
 var documents={};
 
@@ -12,25 +12,38 @@ var jingwenstore=Reflux.createStore({
 		this.listenTo(markupStore, this.onMarkup);
 	}
 	,getDocument(dbid) {
-		if (!documents[dbid]) documents[dbid]=ksanaLayer.layerdoc.create({name:dbid});
+		if (!documents[dbid]) documents[dbid]=layerDoc.create({name:dbid});
 		return documents[dbid];
 	}
-	,onMarkup:function(markups,dbid,segid) {
-		console.log("new markup",markups,dbid,segid);
+	,onMarkup:function(mutation,dbid,segid,markups) {
+		var doc=this.getDocument(dbid);
+		if (doc.has(segid)) {
+			var text=doc.get(segid);
+			this.trigger(dbid,segid,text,markups);
+		}
 	}
 	,onFetch:function(dbid,segid) {
 		var that=this, text="";
 		var doc=this.getDocument(dbid);
 		if (doc.has(segid)) {
 			text=doc.get(segid);
-			this.trigger(dbid,segid,text);
+			var markups=markupStore.getMarkups(dbid,segid);
+			if (markups) this.trigger(dbid,segid,text,markups);
 			return ;
 		}
 		this.firebase.child(dbid+'/'+segid).once("value",function(snapshot){
 			if (doc.has(segid)) return;
+
 			var raw=snapshot.val();
 			text=doc.put(segid,raw.text);
-			that.trigger(dbid,segid,text);
+
+			var markups=markupStore.getMarkups(dbid,segid);
+			if (markups) {
+				that.trigger(dbid,segid,text,markups);
+			} else {
+				//markupStore will trigger when markups are fetched
+			}
+
 		});
 	}
 });

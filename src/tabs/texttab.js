@@ -21,6 +21,9 @@ var jingwenAction=require("../actions/jingwen");
 var TextToolbar=require("../views/texttoolbar");
 var TextFooter=require("../views/textfooter");
 var segRefCount =require("../actions/segrefcount");
+
+var markupStyleSheets=require("./markupstylesheets");
+
 var TextTab = React.createClass({
   displayName: 'TextTab'
   ,mixins: [TabWrapperMixin,PureRenderMixin
@@ -112,6 +115,8 @@ var TextTab = React.createClass({
     return  E(component,{onSelect:this.onSelect
           ,style : {fontSize:this.state.fontSize+"%",color:color,backgroundColor:backgroundColor}
           ,selections :this.state.selections
+          ,markups:this.state.markups
+          ,markupStyles:markupStyleSheets()
           ,text :this.state.text
           ,showCaret:true });
   }
