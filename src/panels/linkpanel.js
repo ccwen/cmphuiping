@@ -58,9 +58,9 @@ var LinkPanel = React.createClass({
       E(FloatingPanel, {left: 10, top: this.props.top||300, width: this.props.width||280, ref: "LinkPanel", 
               theme:"flexbox2",buttons:this.panelButtons()},
 
-    	E(SelectionTab, {icon: "", title: "Selection", showToolbar:that.state.toolbar})
-      ,E(LinkedTab, {icon: "fa fa-link", title: "Linked", showToolbar:that.state.toolbar})
-      ,E(PNodeTab, {icon: "fa fa-share-alt", title: "PNode", showToolbar:that.state.toolbar})
+    	E(SelectionTab, {icon: "", title: "Sel", showToolbar:that.state.toolbar})
+      ,E(LinkedTab, {icon: "", title: "Link", showToolbar:that.state.toolbar})
+      ,E(PNodeTab, {icon: "", title: "PNode", showToolbar:that.state.toolbar})
       )
     );
   }

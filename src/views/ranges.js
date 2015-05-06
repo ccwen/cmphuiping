@@ -11,7 +11,9 @@ var Ranges=React.createClass({
     for (var i=0;i<sels.length;i++) {
       var sel=sels[i];
       if (!sel[1]) continue;
-      out.push(<span key={i}>[{sel[0]},{sel[1]},{sel[2]}]</span> );
+      var text=sel[2];
+      if (text.length>5) text=text.substr(0,5)+"…";
+      out.push(<span key={i}>[{sel[0]},{sel[1]},{text}]</span> );
     }
     return out;
   }

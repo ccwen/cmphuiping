@@ -80,6 +80,11 @@ var MarkupStore=Reflux.createStore({
 	,onAdd:function(dbid,segid,trait) {
 		var auth=userstore.getAuth();
 		var user=auth?auth.uid:"anonymous";
+		if (!dbid||!segid)  {
+			console.log("invalid dbid or segid");
+			console.trace();
+			return;
+		}
 		var key=dbid+"/"+segid;
 
 		var ref=firebaseurl.markups(key).push();
@@ -94,7 +99,7 @@ var MarkupStore=Reflux.createStore({
 	,canEdit:function(markup) {
 		var auth=userstore.getAuth();
 		var user=auth?auth.uid:"anonymous";
-		if (this.admin.indexOf(user)>-1 || markup.user===user) return true;
+		if (this.admin.indexOf(user)>-1 || markup.author===user) return true;
 	}
 	,onChange:function(dbid,segid,markup) {
 		if (!this.canEdit(markup))return -1;

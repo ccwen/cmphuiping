@@ -13,6 +13,7 @@ var PureRenderMixin=React.addons.PureRenderMixin;
 
 var action=require("../actions/panel");
 var selectionAction=require("../actions/selection");
+var markupAction=require("../actions/markup");
 var selectionStore=require("../stores/selection");
 var MultiSelectView=require("ksana-layer-react").MultiSelectView;
 var RevisionView=require("ksana-layer-react").RevisionView;
@@ -21,6 +22,7 @@ var jingwenAction=require("../actions/jingwen");
 var TextToolbar=require("../views/texttoolbar");
 var TextFooter=require("../views/textfooter");
 var segRefCount =require("../actions/segrefcount");
+var textrange=require("ksana-layer-react").textrange;
 
 var markupStyleSheets=require("./markupstylesheets");
 
@@ -30,9 +32,12 @@ var TextTab = React.createClass({
     ,Reflux.listenTo(jingwenStore,"onData")
     ,Reflux.listenTo(selectionStore,"onSelection")]
   ,getInitialState: function () {
-     return {sz:1,title:this.props.title,text:""
+    var selections=this.props.selections;
+    // for moveCaretOnly to work properly on the first time
+    if (!selections||selections.length===0) selections=[[0,0]]; 
+    return {sz:1,title:this.props.title,text:""
       ,fontSize:this.props.trait.fontSize || 100
-      ,selections:this.props.selections||[]
+      ,selections:selections
       ,editing:false};
   }
   ,propTypes:{
@@ -40,7 +45,9 @@ var TextTab = React.createClass({
   }
   ,onData:function(dbid,segid,text,markups) {
     if (dbid!==this.props.trait.dbid||segid!==this.props.trait.segid) return;
-    this.setState({text:text,markups:markups,title:this.props.trait.dbid+":"+this.props.trait.segid});
+    var markupInRange=textrange.markupInRange(markups,this.state.selections);
+    this.setState({text:text, markups:markups, markupInRange:markupInRange,
+      title:this.props.trait.dbid+":"+this.props.trait.segid});
   }
   ,componentWillReceiveProps:function(nextProps) {
     if (this.props.trait.dbid!=nextProps.trait.dbid ||
@@ -96,11 +103,20 @@ var TextTab = React.createClass({
   ,onSelection:function(selections,dbid,segid) {
     var trait=this.props.trait;
     if (dbid!=trait.dbid || segid!=trait.segid) return; //not my business
-    this.setState({selections:selections});
+
+    this.setState(
+      {selections:selections, 
+        markupInRange:textrange.markupInRange(this.state.markups,selections)
+    });
+  }
+  ,moveCaretOnly:function(selections) { //moving caret should not do selectionAction.set
+    return (selections.length==1 && selections[0][1]==0)
+    && (this.state.selections.length==1 && this.state.selections[0][1]==0)
   }
   ,onSelect:function(start,len,text,modifier,selections){
     if (this.state.editing) return true;
     var trait=this.props.trait;
+    if (this.moveCaretOnly(selections))return;
     selectionAction.set(trait.dbid,trait.segid,selections);
   }
   ,renderContent:function() {
@@ -123,6 +139,12 @@ var TextTab = React.createClass({
   ,toggleEdit:function() {
     this.setState({editing:!this.state.editing});
   }
+  ,removeMarkup:function() {
+    var trait=this.props.trait;
+    this.state.markupInRange.map(function(m){
+      markupAction.remove(trait.dbid,trait.segid,m);
+    });
+  }
   ,action:function(act) {
     if (act==="next") this.nextSeg();
     else if (act==="prev") this.prevSeg();
@@ -130,6 +152,7 @@ var TextTab = React.createClass({
     else if (act==="clone") this.cloneTabInNewPanel();
     else if (act==="fontresize") this.fontresize();
     else if (act==="resize") this.resize();
+    else if (act==="removeMarkup") this.removeMarkup();
   }
   ,render: function() {
     return (
@@ -142,7 +165,7 @@ var TextTab = React.createClass({
         maxContentHeight={400}
       >
         <Toolbar>
-          <TextToolbar action={this.action} editing={this.state.editing}/>
+          <TextToolbar action={this.action} editing={this.state.editing} markupInRange={this.state.markupInRange}/>
         </Toolbar>
 
         <Content>

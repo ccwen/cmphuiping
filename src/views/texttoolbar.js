@@ -5,6 +5,11 @@ var TextToolbar=React.createClass({
 	mixins:[PureRenderMixin]
 	,propTypes:{
 		action:React.PropTypes.func.isRequired
+		,editing:React.PropTypes.bool
+		,markupInRange:React.PropTypes.array
+	}
+	,getDefaultProps:function(){
+		return {markupInRange:[]};
 	}
 	,prevSeg:function() {
 		this.props.action("prev");
@@ -24,6 +29,15 @@ var TextToolbar=React.createClass({
 	,resize:function() {
 		this.props.action("resize");
 	}
+	,removeMarkup:function() {
+		this.props.action("removeMarkup");
+	}
+	,renderClearMarkup:function() {
+		var clearable=this.props.markupInRange.length;
+		if (clearable) {
+			return <button onClick={this.removeMarkup}><i className="fa fa-trash-o"/>{clearable}</button>
+		}
+	}
 	,render:function(){
 		var btnstyle={marginLeft:"auto"};
 		if (this.props.editing) btnstyle={marginLeft:"auto",backgroundColor:"lightgreen",
@@ -36,6 +50,7 @@ var TextToolbar=React.createClass({
           <button title="change font size" onClick={this.fontresize}><i className="fa fa-font"></i></button>
 
           <button onClick={this.nextSeg}><i className="fa fa-chevron-right"/></button>
+          {this.renderClearMarkup()}
           <button style={btnstyle} onClick={this.toggleEdit}><i className="fa fa-pencil"/></button>
           </div>	
          );
