@@ -49,6 +49,14 @@ var panelStore=Reflux.createStore({
 			return tab;
 		});
 	}
+	,onBringTop:function(panelkey) {
+		var panel=this.getPanel(panelkey);
+		if (!panel) return;
+		var i=this.panels.indexOf(panel);
+		this.panels.splice(i,1);
+		this.panels=update(this.panels, {$push:[panel]});
+		this.trigger(this.panels);
+	}
 	,onAddTab:function(panelkey,tab,notrigger) {
 		var panel=this.getPanel(panelkey);
 		if (!panel) return;

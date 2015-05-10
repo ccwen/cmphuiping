@@ -7,12 +7,12 @@ var Selection=Reflux.createStore({
 	,selections:{}
 	,broadcast:function() {
 		var sels=this.selections;
+
 		for (var key in sels) {
 			var res=key.split("/");
 			this.trigger(sels[key],res[0],res[1]);
-			if (!sels[key].length) {
-				delete sels[key];
-			}
+
+			if (!sels[key]) delete sels[key];
 		}
 		this.trigger(sels,"*");
 	}

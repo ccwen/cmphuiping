@@ -62,6 +62,9 @@ var BasePanel=React.createClass({
 		this.setState({width:zoom*300});
 		action.set(this.props.panelKey,this.props.context.props);
 	}
+	,onClick:function(){
+		action.bringTop(this.props.panelKey);
+	}
 	,renderTab:function(tab,idx) {
 		var component=tabtype.componentbyType(tab.type);
 		return E(component,{
@@ -70,12 +73,14 @@ var BasePanel=React.createClass({
 			trait:tab,
 			panelKey:this.props.panelKey,
 			onClone:this.onClone,
+			
 			onResize:this.onResize,
 			showToolbar:(this.state.aux&1)==1,
 			showFooter:(this.state.aux&2)==2});
 	}
 	,render:function() {
-		return <FloatingPanel onBoundsChange ={this.onBoundsChange } ref="panel" {...this.state} selectedIndex={this.props.tabs.length-1} >
+		return <FloatingPanel onBoundsChange ={this.onBoundsChange }  onClick={this.onClick} 
+		 ref="panel" {...this.state} selectedIndex={this.props.tabs.length-1} >
 		{this.props.tabs.map(this.renderTab)}</FloatingPanel>;
 	}
 })

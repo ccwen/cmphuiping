@@ -19,17 +19,26 @@ var jingwenstore=Reflux.createStore({
 		var doc=this.getDocument(dbid);
 		if (doc.has(segid)) {
 			var text=doc.get(segid);
-			this.trigger(dbid,segid,text,markups);
+			this.trigger(dbid,segid,text,markups,doc.getTrait(segid).seq);
 		}
+	}
+	,findSegBySeq:function(dbid,seq,cb) {
+		this.firebase.child(dbid).orderByChild("seq").equalTo(seq).once("value",function(snapshot){
+			var o=snapshot.val();
+			var segid=null;
+			if (o) segid=Object.keys(o)[0];
+			cb(segid);
+		});
 	}
 	,onFetch:function(dbid,segid) {
 		var that=this, text="";
 		var doc=this.getDocument(dbid);
 		if (doc.has(segid)) {
 			text=doc.get(segid);
-			var markups=markupStore.getMarkups(dbid,segid);
+			var seq=doc.getTrait(segid).seq;
+			var markups=markupStore.getMarkups(dbid,segid,seq);
 			if (markups) {
-				this.trigger(dbid,segid,text,markups);
+				this.trigger(dbid,segid,text,markups,seq);
 			} else {
 				//markupStore will trigger when markups are fetched
 			}
@@ -39,11 +48,11 @@ var jingwenstore=Reflux.createStore({
 			if (doc.has(segid)) return;
 
 			var raw=snapshot.val();
-			text=doc.put(segid,raw.text);
+			text=doc.put(segid,raw.text,{seq:raw.seq});
 
-			var markups=markupStore.getMarkups(dbid,segid);
+			var markups=markupStore.getMarkups(dbid,segid,raw.seq);
 			if (markups) {
-				that.trigger(dbid,segid,text,markups);
+				that.trigger(dbid,segid,text,markups,raw.seq);
 			} else {
 				//markupStore will trigger when markups are fetched
 			}

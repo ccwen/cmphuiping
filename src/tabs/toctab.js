@@ -18,7 +18,7 @@ var firebaseurl=require("../stores/firebaseurl");
 var action=require("../actions/panel");
 
 var mockdata=require("../../mockdata/index");
-
+var userstore=require("../stores/user");
 
 var TocTab = React.createClass({
   displayName: 'TocTab'
@@ -60,7 +60,8 @@ var TocTab = React.createClass({
     var dbid=e.target.dataset.dbid;
     var tabtype=require("./tabtype");
     var component=tabtype.componentbyType("text");
-    var tab={component:component,dbid:dbid,segid:segid,title:dbid+":"+segid};
+    var uid=userstore.getAuth().uid||"anonymous";
+    var tab={component:component,dbid:dbid,segid:segid,title:dbid+":"+segid,user:uid};
     panelActions.addTab(this.props.panelKey,tab);
   }
   ,renderLink:function(links) {

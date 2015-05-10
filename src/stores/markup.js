@@ -44,19 +44,19 @@ var MarkupStore=Reflux.createStore({
 		var r=this.updateMarkupsFromSnapshot(childSnapshot);
 		if (!r) return;
 		//console.log("markup added",r.markup,r.dbid,r.segid);
-		this.trigger({added:r.markup},r.dbid,r.segid,this.toArray(r.markups));
+		this.trigger({added:r.markup},r.dbid,r.segid,r.markups);
 	}
 	,markupRemoved:function(childSnapshot) {
 		var r=this.updateMarkupsFromSnapshot(childSnapshot,"remove");
 		if (!r) return;
 		//console.log("markup removed",r.markup,r.dbid,r.segid);
-		this.trigger({removed:r.markup},r.dbid,r.segid,this.toArray(r.markups));
+		this.trigger({removed:r.markup},r.dbid,r.segid,r.markups);
 	}
 	,markupChanged:function(childSnapshot) {
 		var r=this.updateMarkupsFromSnapshot(childSnapshot);
 		if (!r) return;
 		//console.log("markup changed",r.markup,r.dbid,r.segid);
-		this.trigger({changed:r.markup},r.dbid,r.segid,this.toArray(r.markups));
+		this.trigger({changed:r.markup},r.dbid,r.segid,r.markups);
 	}
 	,onRefCount:function(act,referencing) {
 		//console.log('refcount',act,referencing);
@@ -69,13 +69,6 @@ var MarkupStore=Reflux.createStore({
 			firebaseurl.markups(act.removed).off();
 			delete this.markups[act.removed]; //delete from cache, refetch all markups when getMarkups
 		}
-	}
-	,toArray:function(markups) {
-		var out=[];
-		for (var i in markups) {
-			out.push(markups[i]);
-		}
-		return out;
 	}
 	,onAdd:function(dbid,segid,trait) {
 		var auth=userstore.getAuth();
@@ -123,7 +116,7 @@ var MarkupStore=Reflux.createStore({
 		var ref=firebaseurl.markups(key).child(markup.id).remove();
 		return 0;
 	}
-	,getMarkups:function(dbid,segid) {
+	,getMarkups:function(dbid,segid,seq) {
 		var key=dbid+"/"+segid;
 		var markups=this.markups[key];
 		if (markups) {
@@ -133,9 +126,7 @@ var MarkupStore=Reflux.createStore({
 		var that=this;
 		firebaseurl.markups(key).once("value",function(data){
 			that.markups[key]=data.val() || {};
-			var markups=that.toArray(that.markups[key]);
-			//console.log('markups of',dbid,segid,markups);
-			that.trigger({},dbid,segid,markups);
+			that.trigger({},dbid,segid,that.markups[key],seq);
 		});
 
 	}

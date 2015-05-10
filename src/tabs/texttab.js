@@ -15,8 +15,15 @@ var action=require("../actions/panel");
 var selectionAction=require("../actions/selection");
 var markupAction=require("../actions/markup");
 var selectionStore=require("../stores/selection");
-var MultiSelectView=require("ksana-layer-react").MultiSelectView;
-var RevisionView=require("ksana-layer-react").RevisionView;
+
+//var MultiSelectView=require("ksana-layer-react").MultiSelectView;
+//var RevisionView=require("ksana-layer-react").RevisionView;
+
+
+var SelectableView=require("ksana-layer-react").SelectableView;
+var InterlineView=require("ksana-layer-react").InterlineView;
+
+
 var jingwenStore=require("../stores/jingwen");
 var jingwenAction=require("../actions/jingwen");
 var TextToolbar=require("../views/texttoolbar");
@@ -43,11 +50,11 @@ var TextTab = React.createClass({
   ,propTypes:{
     trait:React.PropTypes.object.isRequired
   }
-  ,onData:function(dbid,segid,text,markups) {
+  ,onData:function(dbid,segid,text,markups,seq) {
     if (dbid!==this.props.trait.dbid||segid!==this.props.trait.segid) return;
     var markupInRange=textrange.markupInRange(markups,this.state.selections);
     this.setState({text:text, markups:markups, markupInRange:markupInRange,
-      title:this.props.trait.dbid+":"+this.props.trait.segid});
+      title:this.props.trait.dbid+":"+this.props.trait.segid,seq:seq});
   }
   ,componentWillReceiveProps:function(nextProps) {
     if (this.props.trait.dbid!=nextProps.trait.dbid ||
@@ -81,24 +88,28 @@ var TextTab = React.createClass({
   ,cloneTabInNewPanel:function() {
     action.add([this.props.trait]);
   }
-  ,changeTab:function(segid) {
+  ,changeTab:function(seq) {
     var dbid=this.props.trait.dbid;
-    var tab={component:TextTab,dbid:dbid,segid:segid,title:dbid+":"+segid};
-    action.closeAdd(this.props.panelKey,this.props.trait.key,tab);
+    jingwenStore.findSegBySeq(dbid,seq,function(segid){
+      if (segid) {
+        var tab={component:TextTab,dbid:dbid,segid:segid,title:dbid+":"+segid};
+        action.closeAdd(this.props.panelKey,this.props.trait.key,tab);        
+      }
+    }.bind(this));
   }
   ,prevSeg:function() {
-    var n=parseInt(this.props.trait.segid);
+    var n=parseInt(this.state.seq);
     if (!n) return;
     n--;
     this.setState({selections:[]});
-    this.changeTab(n.toString());
+    this.changeTab(n);
   }
   ,nextSeg:function() {
     if (!this.state.text) return;
-    var n=parseInt(this.props.trait.segid);
+    var n=parseInt(this.state.seq);
     n++;
     this.setState({selections:[]});
-    this.changeTab(n.toString());
+    this.changeTab(n);
   }
   ,onSelection:function(selections,dbid,segid) {
     var trait=this.props.trait;
@@ -110,31 +121,33 @@ var TextTab = React.createClass({
     });
   }
   ,moveCaretOnly:function(selections) { //moving caret should not do selectionAction.set
-    return (selections.length==1 && selections[0][1]==0)
+    return (selections&&selections.length==1 && selections[0][1]==0)
     && (this.state.selections.length==1 && this.state.selections[0][1]==0)
   }
-  ,onSelect:function(start,len,text,modifier,selections){
-    if (this.state.editing) return true;
+  ,onSelectText:function(start,len,text,modifier,selections){
     var trait=this.props.trait;
     if (this.moveCaretOnly(selections))return;
     selectionAction.set(trait.dbid,trait.segid,selections);
   }
   ,renderContent:function() {
     if (!this.state.text) return;
-    var component=MultiSelectView;
-    var color="white",backgroundColor="inherit";
+    var component=SelectableView;
+    this.style={r:Math.random(),color:"white",backgroundColor:"inherit"
+    ,fontSize:this.state.fontSize+"%"};
     if (this.state.editing) {
-      component=RevisionView;
-      color="silver";
-      backgroundColor="black";
+      component=InterlineView;
+      this.style.color="silver";
+      this.style.backgroundColor="black";
     }
-    return  E(component,{onSelect:this.onSelect
-          ,style : {fontSize:this.state.fontSize+"%",color:color,backgroundColor:backgroundColor}
+    
+    return  E(component,{ //onSelect:this.onSelect
+          style : this.style
+          ,selectable:"multiple"
           ,selections :this.state.selections
+          ,onSelectText:this.onSelectText
           ,markups:this.state.markups
           ,markupStyles:markupStyleSheets()
-          ,text :this.state.text
-          ,showCaret:true });
+          ,text :this.state.text});
   }
   ,toggleEdit:function() {
     this.setState({editing:!this.state.editing});
