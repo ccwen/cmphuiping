@@ -91,7 +91,7 @@ var UserTab = React.createClass({
         showToolbar={false}
       >
         <Content onResize={this.onresize}>
-         {this.state.auth?this.renderUser():this.renderSignin()}
+         {(this.state.auth && this.state.auth.google)?this.renderUser():this.renderSignin()}
         </Content>
       </Tab>
     );
