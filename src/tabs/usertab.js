@@ -31,7 +31,7 @@ var UserTab = React.createClass({
      this.listenTo(store, this.onUserChange);
   }
   ,fetchAvatar:function(auth) {
-    if (!auth) return;
+    if (!auth || !auth.uid) return;
     var that=this;
     var googleuid=auth.uid.substr(7);
     var apiurl="https://picasaweb.google.com/data/entry/api/user/"+googleuid+"?alt=json";
