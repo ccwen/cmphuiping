@@ -22,7 +22,23 @@ var jingwenstore=Reflux.createStore({
 			this.trigger(dbid,segid,text,markups,doc.getTrait(segid).seq);
 		}
 	}
+	,findSeq:function(dbid,seq) {
+		/** future improvement is to get segid order by seq, 
+		but the component doesn't provide shallow fetch */
+		var doc=this.getDocument(dbid);
+		var segnames=doc.segnames;
+		for (var i=0;i<segnames.length;i++) {
+			var trait=doc.getTrait(segnames[i]);
+			if (trait.seq===seq) return segnames[i];
+		}
+		return null;
+	}
 	,findSegBySeq:function(dbid,seq,cb) {
+		var segid=this.findSeq(dbid,seq);
+		if (segid) {
+			cb(segid);
+			return;
+		}
 		this.firebase.child(dbid).orderByChild("seq").equalTo(seq).once("value",function(snapshot){
 			var o=snapshot.val();
 			var segid=null;
