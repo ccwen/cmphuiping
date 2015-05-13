@@ -175,7 +175,7 @@ var TextTab = React.createClass({
         showToolbar={this.props.showToolbar}
         showFooter={this.props.showFooter}
         maxContentHeight={this.props.maxContentHeight}
-        maxContentHeight={400}
+        maxContentHeight={720}
       >
         <Toolbar>
           <TextToolbar action={this.action} editing={this.state.editing} markupInRange={this.state.markupInRange}/>
