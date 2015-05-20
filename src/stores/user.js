@@ -32,7 +32,7 @@ var User=Reflux.createStore({
 		this.trigger(null);
 	},
 	getAuth:function() {
-		return this.auth||{};
+		return this.auth||{uid:"anonymous"};
 	}
 });
 

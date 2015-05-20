@@ -19,7 +19,7 @@ var selectionStore=require("../stores/selection");
 //var MultiSelectView=require("ksana-layer-react").MultiSelectView;
 //var RevisionView=require("ksana-layer-react").RevisionView;
 
-
+var user=require("../stores/user");
 var SelectableView=require("ksana-layer-react").SelectableView;
 var InterlineView=require("ksana-layer-react").InterlineView;
 
@@ -45,7 +45,7 @@ var TextTab = React.createClass({
     return {sz:1,title:this.props.title,text:""
       ,fontSize:this.props.trait.fontSize || 100
       ,selections:selections
-      ,editing:false};
+      ,editmode:false,editing:null};
   }
   ,propTypes:{
     trait:React.PropTypes.object.isRequired
@@ -125,16 +125,43 @@ var TextTab = React.createClass({
     && (this.state.selections.length==1 && this.state.selections[0][1]==0)
   }
   ,onSelectText:function(start,len,text,modifier,selections){
+    this.start=start;
+    this.seltext=text;
     var trait=this.props.trait;
     if (this.moveCaretOnly(selections))return;
     selectionAction.set(trait.dbid,trait.segid,selections);
+  }
+  ,newMarkup:function() {
+    var trait=this.props.trait;
+    markupAction.add(trait.dbid,trait.segid, {s:this.start,l:this.seltext.length,type:"rev",t:"",author:user.getAuth().uid},
+      function(m){
+        this.setState({editing:m.id});
+      }.bind(this));
+  }
+  ,onDoneEdit:function(mid) {
+    var trait=this.props.trait;
+    var m=this.state.markups[mid];
+    if (m.t==="" && m.l===0) {
+      markupAction.remove(trait.dbid,trait.segid,m);
+    }
+    this.setState({editing:null});
+  }
+  ,onKeyPress:function(e) {
+    if (e.key==" " && this.state.editmode) {
+      if (!this.start) return;
+      this.newMarkup();
+      e.preventDefault();
+    }
+    var nn=e.target.nodeName;
+    if (nn==="INPUT" || nn==="TEXTAREA") return;
+    e.preventDefault();
   }
   ,renderContent:function() {
     if (!this.state.text) return;
     var component=SelectableView;
     this.style={r:Math.random(),color:"white",backgroundColor:"inherit"
     ,fontSize:this.state.fontSize+"%"};
-    if (this.state.editing) {
+    if (this.state.editmode) {
       component=InterlineView;
       this.style.color="silver";
       this.style.backgroundColor="black";
@@ -147,10 +174,15 @@ var TextTab = React.createClass({
           ,onSelectText:this.onSelectText
           ,markups:this.state.markups
           ,markupStyles:markupStyleSheets()
+          ,onDoneEdit:this.onDoneEdit
+          ,allowKeys:[" "]
+          ,onKeyPress:this.onKeyPress
+          ,editing:this.state.editing
+          ,user:user.getAuth().uid
           ,text :this.state.text});
   }
   ,toggleEdit:function() {
-    this.setState({editing:!this.state.editing});
+    this.setState({editmode:!this.state.editmode});
   }
   ,removeMarkup:function() {
     var trait=this.props.trait;

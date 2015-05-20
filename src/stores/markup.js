@@ -70,7 +70,7 @@ var MarkupStore=Reflux.createStore({
 			delete this.markups[act.removed]; //delete from cache, refetch all markups when getMarkups
 		}
 	}
-	,onAdd:function(dbid,segid,trait) {
+	,onAdd:function(dbid,segid,trait,cb) {
 		var auth=userstore.getAuth();
 		var user=auth?auth.uid:"anonymous";
 		if (!dbid||!segid)  {
@@ -87,7 +87,9 @@ var MarkupStore=Reflux.createStore({
 		if (!this.markups[key]) this.markups[key]={} ;
 
 		ref.set(markup);
-		return markup;
+		if (typeof cb==="function") {
+			cb(markup);
+		}
 	}
 	,canEdit:function(markup) {
 		var auth=userstore.getAuth();
