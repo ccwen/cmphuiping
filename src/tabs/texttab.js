@@ -133,7 +133,8 @@ var TextTab = React.createClass({
   }
   ,newMarkup:function() {
     var trait=this.props.trait;
-    markupAction.add(trait.dbid,trait.segid, {s:this.start,l:this.seltext.length,type:"rev",t:"",author:user.getAuth().uid},
+    markupAction.add(trait.dbid,trait.segid, {s:this.start,l:this.seltext.length,type:"rev",t:""
+      ,author:user.getAuth().uid,username:user.getAuth().google.displayName},
       function(m){
         this.setState({editing:m.id});
       }.bind(this));
