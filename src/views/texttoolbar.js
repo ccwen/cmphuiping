@@ -5,7 +5,7 @@ var TextToolbar=React.createClass({
 	mixins:[PureRenderMixin]
 	,propTypes:{
 		action:React.PropTypes.func.isRequired
-		,editing:React.PropTypes.bool
+		,editing:React.PropTypes.string
 		,markupInRange:React.PropTypes.array
 	}
 	,getDefaultProps:function(){

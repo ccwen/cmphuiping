@@ -11,7 +11,7 @@ var jingwenstore=Reflux.createStore({
 		this.firebase=firebaseurl.jingwen();	
 		this.listenTo(markupStore, this.onMarkup);
 	}
-	,getDocument(dbid) {
+	,getDocument:function(dbid) {
 		if (!documents[dbid]) documents[dbid]=layerDoc.create({name:dbid});
 		return documents[dbid];
 	}

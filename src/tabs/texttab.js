@@ -144,14 +144,19 @@ var TextTab = React.createClass({
     var m=this.state.markups[mid];
     if (m.t==="" && m.l===0) {
       markupAction.remove(trait.dbid,trait.segid,m);
+    } else {
+      markupAction.change(trait.dbid,trait.segid,m);
     }
     this.setState({editing:null});
   }
   ,onKeyPress:function(e) {
     if (e.key==" " && this.state.editmode) {
-      if (!this.start) return;
-      this.newMarkup();
       e.preventDefault();
+      if (!this.start) {
+        console.error("invalid start",this.start);
+        return;
+      }
+      this.newMarkup();
     }
     var nn=e.target.nodeName;
     if (nn==="INPUT" || nn==="TEXTAREA") return;
